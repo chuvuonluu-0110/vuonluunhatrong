@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vườn lựu của Hades</title>
+  <meta name="description" content="Vườn lựu tương tác lấy cảm hứng từ thần thoại Hades và Persephone. Chọn một quả lựu, khám phá câu chuyện và gặp gỡ linh hồn trong Google AI Studio.">
+  <meta name="theme-color" content="#F6EFE5">
+
+  <!-- Early Theme Persistence Detection (Prevents theme flash on reload) -->
+  <script>
+    (function() {
+      try {
+        if (localStorage.getItem('hades_theme') === 'dark') {
+          document.documentElement.classList.add('dark-mode');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Favicon: Botanical Pomegranate Motif -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='11' fill='%239E3040'/%3E%3Cpath d='M16 7 L14 3 L16 5 L18 3 Z' fill='%23672D38'/%3E%3Ccircle cx='16' cy='18' r='4' fill='%23C98F92' opacity='0.4'/%3E%3C/svg%3E">
+
+  <!-- Typography: Cormorant Garamond (Editorial Serif) & Inter (Modern Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- Supabase Browser Client (External Database for "Thắp hoa đăng cho linh hồn") -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- Subtle Paper Grain Overlay -->
+  <div class="paper-grain-overlay" aria-hidden="true"></div>
+
+  <!-- Ambient Underworld Spores & Mist Canvas -->
+  <canvas id="ambient-particles" aria-hidden="true"></canvas>
+
+  <!-- Background Atmospheric Audio Element -->
+  <audio id="bg-music" loop preload="auto" aria-hidden="true">
+    <source src="assets/music.mp3" type="audio/mpeg">
+    <source src="./assets/music.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Dark Mode Decorative Underworld Ivy (Top-Left & Bottom-Right) -->
+  <div class="ivy-overlay ivy-top-left" aria-hidden="true">
+    <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 0 C45 35, 70 85, 95 140 C110 175, 145 200, 190 220 C235 240, 270 250, 310 260" class="ivy-vine-main" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M0 45 C35 70, 60 115, 75 165 C85 200, 110 230, 145 255" class="ivy-vine-sec" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M45 0 C75 40, 125 65, 175 80 C215 92, 250 115, 275 150" class="ivy-vine-sec" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M95 140 C105 130, 115 132, 112 142 C108 152, 98 150, 102 140" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <path d="M190 220 C205 210, 218 215, 212 228 C206 240, 195 235, 198 222" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <path d="M175 80 C188 72, 198 78, 192 90 C186 100, 176 96, 180 84" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <g class="ivy-leaf-group" transform="translate(30, 25) rotate(25)">
+        <path d="M0 0 C-12 -8, -18 -22, -10 -32 C-2 -40, 14 -38, 20 -28 C28 -38, 42 -35, 45 -22 C48 -10, 38 6, 25 15 C12 22, -4 10, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q15 -12 20 -28" class="ivy-leaf-vein" stroke-width="1.2"/>
+        <path d="M10 -8 Q0 -18 -10 -32" class="ivy-leaf-vein" stroke-width="0.9"/>
+        <path d="M16 -16 Q30 -22 45 -22" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(65, 75) rotate(-15)">
+        <path d="M0 0 C-10 -7, -15 -18, -8 -26 C-1 -32, 11 -30, 16 -22 C22 -30, 34 -28, 36 -18 C38 -8, 30 5, 20 12 C10 18, -3 8, 0 0 Z" class="ivy-leaf-fill-accent"/>
+        <path d="M0 0 Q12 -10 16 -22" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(105, 145) rotate(40)">
+        <path d="M0 0 C-14 -10, -20 -26, -12 -36 C-3 -44, 16 -42, 22 -30 C30 -42, 46 -38, 48 -24 C52 -10, 40 8, 28 16 C14 24, -4 12, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q16 -14 22 -30" class="ivy-leaf-vein" stroke-width="1.2"/>
+        <path d="M11 -9 Q0 -20 -12 -36" class="ivy-leaf-vein" stroke-width="0.9"/>
+        <path d="M17 -18 Q32 -24 48 -24" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(80, 175) rotate(85)">
+        <path d="M0 0 C-9 -6, -14 -16, -7 -24 C-1 -30, 10 -28, 15 -20 C20 -28, 30 -26, 32 -16 C34 -7, 26 4, 18 10 C9 15, -3 7, 0 0 Z" class="ivy-leaf-fill-light"/>
+        <path d="M0 0 Q10 -9 15 -20" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(150, 95) rotate(-35)">
+        <path d="M0 0 C-11 -8, -16 -20, -9 -28 C-2 -35, 12 -34, 18 -24 C24 -34, 38 -31, 40 -20 C42 -9, 34 5, 22 13 C11 20, -3 9, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q13 -11 18 -24" class="ivy-leaf-vein" stroke-width="1.1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(205, 110) rotate(15)">
+        <path d="M0 0 C-8 -5, -12 -14, -6 -20 C-1 -26, 9 -24, 13 -18 C18 -24, 27 -23, 29 -14 C31 -6, 24 4, 16 9 C8 13, -2 6, 0 0 Z" class="ivy-leaf-fill-accent"/>
+        <path d="M0 0 Q9 -8 13 -18" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(195, 225) rotate(60)">
+        <path d="M0 0 C-13 -9, -18 -24, -10 -34 C-2 -42, 14 -40, 20 -28 C28 -40, 44 -36, 46 -22 C50 -9, 38 7, 26 15 C13 23, -4 11, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q15 -13 20 -28" class="ivy-leaf-vein" stroke-width="1.2"/>
+        <path d="M10 -8 Q0 -19 -10 -34" class="ivy-leaf-vein" stroke-width="0.9"/>
+        <path d="M15 -17 Q30 -22 46 -22" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(250, 245) rotate(35)">
+        <path d="M0 0 C-9 -6, -14 -16, -7 -23 C-1 -29, 10 -27, 14 -20 C19 -27, 29 -25, 31 -16 C33 -7, 25 4, 17 10 C8 15, -3 7, 0 0 Z" class="ivy-leaf-fill-light"/>
+        <path d="M0 0 Q10 -9 14 -20" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(285, 265) rotate(70)">
+        <path d="M0 0 C-7 -5, -11 -13, -5 -18 C0 -24, 8 -22, 12 -16 C16 -22, 24 -20, 26 -13 C28 -5, 21 3, 14 8 C7 12, -2 5, 0 0 Z" class="ivy-leaf-fill-accent"/>
+        <path d="M0 0 Q8 -7 12 -16" class="ivy-leaf-vein" stroke-width="0.8"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="ivy-overlay ivy-bottom-right" aria-hidden="true">
+    <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M320 320 C275 285, 250 235, 225 180 C210 145, 175 120, 130 100 C85 80, 50 70, 10 60" class="ivy-vine-main" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M320 275 C285 250, 260 205, 245 155 C235 120, 210 90, 175 65" class="ivy-vine-sec" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M275 320 C245 280, 195 255, 145 240 C105 228, 70 205, 45 170" class="ivy-vine-sec" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M225 180 C215 190, 205 188, 208 178 C212 168, 222 170, 218 180" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <path d="M130 100 C115 110, 102 105, 108 92 C114 80, 125 85, 122 98" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <path d="M145 240 C132 248, 122 242, 128 230 C134 220, 144 224, 140 236" class="ivy-vine-tendril" stroke-width="1.2"/>
+      <g class="ivy-leaf-group" transform="translate(290, 295) rotate(-155)">
+        <path d="M0 0 C-12 -8, -18 -22, -10 -32 C-2 -40, 14 -38, 20 -28 C28 -38, 42 -35, 45 -22 C48 -10, 38 6, 25 15 C12 22, -4 10, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q15 -12 20 -28" class="ivy-leaf-vein" stroke-width="1.2"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(255, 245) rotate(165)">
+        <path d="M0 0 C-10 -7, -15 -18, -8 -26 C-1 -32, 11 -30, 16 -22 C22 -30, 34 -28, 36 -18 C38 -8, 30 5, 20 12 C10 18, -3 8, 0 0 Z" class="ivy-leaf-fill-accent"/>
+        <path d="M0 0 Q12 -10 16 -22" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(215, 175) rotate(-140)">
+        <path d="M0 0 C-14 -10, -20 -26, -12 -36 C-3 -44, 16 -42, 22 -30 C30 -42, 46 -38, 48 -24 C52 -10, 40 8, 28 16 C14 24, -4 12, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q16 -14 22 -30" class="ivy-leaf-vein" stroke-width="1.2"/>
+        <path d="M11 -9 Q0 -20 -12 -36" class="ivy-leaf-vein" stroke-width="0.9"/>
+        <path d="M17 -18 Q32 -24 48 -24" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(240, 145) rotate(-95)">
+        <path d="M0 0 C-9 -6, -14 -16, -7 -24 C-1 -30, 10 -28, 15 -20 C20 -28, 30 -26, 32 -16 C34 -7, 26 4, 18 10 C9 15, -3 7, 0 0 Z" class="ivy-leaf-fill-light"/>
+        <path d="M0 0 Q10 -9 15 -20" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(170, 225) rotate(145)">
+        <path d="M0 0 C-11 -8, -16 -20, -9 -28 C-2 -35, 12 -34, 18 -24 C24 -34, 38 -31, 40 -20 C42 -9, 34 5, 22 13 C11 20, -3 9, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q13 -11 18 -24" class="ivy-leaf-vein" stroke-width="1.1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(125, 95) rotate(-120)">
+        <path d="M0 0 C-13 -9, -18 -24, -10 -34 C-2 -42, 14 -40, 20 -28 C28 -40, 44 -36, 46 -22 C50 -9, 38 7, 26 15 C13 23, -4 11, 0 0 Z" class="ivy-leaf-fill"/>
+        <path d="M0 0 Q15 -13 20 -28" class="ivy-leaf-vein" stroke-width="1.2"/>
+        <path d="M10 -8 Q0 -19 -10 -34" class="ivy-leaf-vein" stroke-width="0.9"/>
+        <path d="M15 -17 Q30 -22 46 -22" class="ivy-leaf-vein" stroke-width="0.9"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(70, 75) rotate(-145)">
+        <path d="M0 0 C-9 -6, -14 -16, -7 -23 C-1 -29, 10 -27, 14 -20 C19 -27, 29 -25, 31 -16 C33 -7, 25 4, 17 10 C8 15, -3 7, 0 0 Z" class="ivy-leaf-fill-light"/>
+        <path d="M0 0 Q10 -9 14 -20" class="ivy-leaf-vein" stroke-width="1"/>
+      </g>
+      <g class="ivy-leaf-group" transform="translate(35, 55) rotate(-110)">
+        <path d="M0 0 C-7 -5, -11 -13, -5 -18 C0 -24, 8 -22, 12 -16 C16 -22, 24 -20, 26 -13 C28 -5, 21 3, 14 8 C7 12, -2 5, 0 0 Z" class="ivy-leaf-fill-accent"/>
+        <path d="M0 0 Q8 -7 12 -16" class="ivy-leaf-vein" stroke-width="0.8"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Navigation Bar with Minimal Music & Candle Controls -->
+  <header class="site-header">
+    <a href="#garden" class="brand-mark" id="brand-link" aria-label="Vườn lựu của Hades">
+      <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2C11.5 2 11 2.8 11 3.5C9 3.8 6 6 5.5 10C5 14.5 8 20.5 12 21C16 20.5 19 14.5 18.5 10C18 6 15 3.8 13 3.5C13 2.8 12.5 2 12 2ZM12 8C13.7 8 15 9.8 15 12C15 14.2 13.7 16 12 16C10.3 16 9 14.2 9 12C9 9.8 10.3 8 12 8Z"/>
+      </svg>
+      <span>Vườn lựu của Hades</span>
+    </a>
+
+    <div class="header-controls">
+      <nav class="site-nav" aria-label="Điều hướng chính">
+        <a href="#garden" class="nav-link active" id="nav-garden">Vườn Lựu</a>
+        <a href="#archive" class="nav-link" id="nav-archive">Sổ Linh hồn</a>
+      </nav>
+
+      <!-- Minimal Atmospheric Music Control -->
+      <button id="music-toggle" class="music-toggle" type="button" aria-label="Bật nhã nhạc">
+        <span class="music-icon" aria-hidden="true">♫</span>
+        <span class="music-label">Nhã nhạc</span>
+      </button>
+
+      <!-- Mystical Underworld Candle (Light / Dark Theme Toggle) -->
+      <button id="candle-toggle" class="candle-toggle" type="button" aria-label="Thắp nến — Bật chế độ tối" aria-pressed="false" title="Thắp nến — Bật chế độ tối">
+        <span class="candle-art" aria-hidden="true">
+          <svg class="candle-svg" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="12" cy="24" rx="8" ry="2.2" class="candle-base" />
+            <path d="M4.5 23.5 C3 22 3 19.5 4.8 18.5 C6.5 17.5 7.2 19.5 7.2 21.2" class="candle-handle" />
+            <path d="M9.5 24 L9.5 13.5 C9.5 12.5 14.5 12.5 14.5 13.5 L14.5 24 Z" class="candle-body" />
+            <ellipse cx="12" cy="13.5" rx="2.5" ry="0.9" class="candle-top" />
+            <path d="M10.2 14 C10.4 16 11.2 17 11.2 18 C11.2 18.5 10.6 18.8 10.4 17.8" class="candle-wax-drip" />
+            <path d="M12 13 C12 11.5 12.8 10.5 12.5 9.5" class="candle-wick" />
+            <g class="candle-flame-group">
+              <ellipse cx="12.5" cy="6.5" rx="5.5" ry="6.5" class="candle-halo" />
+              <path d="M12.5 1 C14.5 4.2 15.6 6.2 15.6 7.8 C15.6 9.6 14.2 11 12.5 11 C10.8 11 9.4 9.6 9.4 7.8 C9.4 6.2 10.5 4.2 12.5 1 Z" class="candle-flame-outer" />
+              <path d="M12.5 3.8 C13.6 5.6 14.2 6.8 14.2 7.8 C14.2 8.8 13.4 9.5 12.5 9.5 C11.6 9.5 10.8 8.8 10.8 7.8 C10.8 6.8 11.4 5.6 12.5 3.8 Z" class="candle-flame-inner" />
+            </g>
+          </svg>
+        </span>
+        <span class="candle-label">Nến dạ</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stage Area for Views -->
+  <main class="view-stage">
+
+    <!-- =======================================================================
+         1. THE GARDEN VIEW (Primary Interactive Experience)
+         ======================================================================= -->
+    <section id="garden-view" class="view-section active" aria-label="Vườn lựu của Hades">
+      
+      <!-- Poetic Prologue -->
+      <header class="garden-prologue">
+        <h1 class="garden-title">Vườn lựu của Hades</h1>
+        <div class="garden-poem" aria-label="Bài thơ">
+          <span>Chào em đến chốn U Minh</span>
+          <span>Món ngon vật lạ sẵn đây đón chờ.</span>
+          <span>Sắc hồng lựu đỏ như thơ,</span>
+          <span>Nếm rồi em hỡi… chớ mơ đường về.</span>
+        </div>
+      </header>
+
+      <!-- The Pomegranate Tree Interactive Stage -->
+      <div class="tree-stage" id="tree-stage">
+        <div class="tree-svg-container">
+          <svg class="tree-svg" viewBox="0 0 1000 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cây lựu cổ thụ chốn U Minh trĩu quả trên cành">
+            <defs>
+              <!-- Branch Bark Gradients -->
+              <linearGradient id="barkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4E2F38"/>
+                <stop offset="50%" stop-color="#3A2128"/>
+                <stop offset="100%" stop-color="#241419"/>
+              </linearGradient>
+
+              <linearGradient id="boughHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#73545D"/>
+                <stop offset="100%" stop-color="#382027"/>
+              </linearGradient>
+
+              <!-- Leaf Gradients -->
+              <linearGradient id="leafGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#9DB08A"/>
+                <stop offset="100%" stop-color="#586749"/>
+              </linearGradient>
+
+              <linearGradient id="leafGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#B2C29F"/>
+                <stop offset="100%" stop-color="#71805E"/>
+              </linearGradient>
+
+              <!-- Pomegranate Fruit Gradients -->
+              <radialGradient id="fruitGrad1" cx="38%" cy="32%" r="65%">
+                <stop offset="0%" stop-color="#D97280"/>
+                <stop offset="45%" stop-color="#A52E40"/>
+                <stop offset="85%" stop-color="#6E1F2C"/>
+                <stop offset="100%" stop-color="#46101B"/>
+              </radialGradient>
+
+              <radialGradient id="fruitGrad2" cx="35%" cy="30%" r="68%">
+                <stop offset="0%" stop-color="#DE818E"/>
+                <stop offset="40%" stop-color="#9C2D3E"/>
+                <stop offset="85%" stop-color="#641B26"/>
+                <stop offset="100%" stop-color="#3D0F17"/>
+              </radialGradient>
+
+              <radialGradient id="fruitGrad3" cx="42%" cy="35%" r="62%">
+                <stop offset="0%" stop-color="#E28B97"/>
+                <stop offset="50%" stop-color="#A33244"/>
+                <stop offset="90%" stop-color="#631B27"/>
+                <stop offset="100%" stop-color="#42131C"/>
+              </radialGradient>
+
+              <radialGradient id="fruitAura" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#C98F92" stop-opacity="0.5"/>
+                <stop offset="60%" stop-color="#B89B68" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#B89B68" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- Underworld Mound & Roots -->
+            <g class="tree-roots" opacity="0.95">
+              <path d="M260 760 C380 735, 620 735, 740 760 C780 768, 860 785, 920 800 L80 800 C140 785, 220 768, 260 760 Z" fill="#2E1C22" opacity="0.45"/>
+              <path d="M420 740 C430 760, 370 785, 310 800" stroke="#3A2128" stroke-width="12" stroke-linecap="round" fill="none"/>
+              <path d="M470 745 C490 770, 520 788, 560 800" stroke="#321D23" stroke-width="14" stroke-linecap="round" fill="none"/>
+              <path d="M540 740 C580 765, 650 785, 710 800" stroke="#3D232A" stroke-width="11" stroke-linecap="round" fill="none"/>
+            </g>
+
+            <!-- Main Trunk & Twisted Boughs -->
+            <g class="tree-trunk-boughs">
+              <!-- Trunk -->
+              <path d="M440 740 C445 680, 435 600, 460 520 C480 450, 455 390, 485 330 C495 305, 520 300, 535 330 C560 380, 545 460, 560 530 C580 610, 570 670, 580 740 Z" fill="url(#barkGradient)"/>
+              
+              <!-- Bark Contours & Organic Gnarling -->
+              <path d="M465 710 C460 640, 475 580, 480 500 C490 440, 480 380, 500 340" stroke="url(#boughHighlight)" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
+              <path d="M545 710 C535 630, 550 560, 535 480 C525 430, 535 370, 520 340" stroke="#241419" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"/>
+
+              <!-- Primary Left Major Boughs -->
+              <!-- Lower Left Branch Network (Fruits 01, 02, 03, 04, 05) -->
+              <path d="M470 490 C410 480, 340 485, 270 470 C220 460, 170 470, 140 470" stroke="url(#barkGradient)" stroke-width="18" stroke-linecap="round" fill="none"/>
+              <path d="M260 470 C240 495, 210 525, 195 520" stroke="url(#barkGradient)" stroke-width="9" stroke-linecap="round" fill="none"/>
+              <path d="M240 465 C230 450, 225 435, 220 425" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M200 465 C180 440, 170 415, 160 385" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M320 480 C300 485, 290 490, 280 475" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+              <!-- Mid Left Branch Network (Fruits 06, 07, 08, 09, 10) -->
+              <path d="M480 410 C420 390, 340 370, 260 365 C200 360, 150 330, 115 305" stroke="url(#barkGradient)" stroke-width="16" stroke-linecap="round" fill="none"/>
+              <path d="M330 375 C315 350, 310 330, 305 315" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M270 365 C260 370, 255 372, 250 355" stroke="url(#barkGradient)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M230 360 C210 340, 195 330, 185 310" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M250 360 C245 320, 240 295, 235 270" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+              <!-- Upper Left Branch Network (Fruits 11, 12, 13, 14, 15) -->
+              <path d="M495 330 C470 270, 420 220, 360 180 C320 160, 260 180, 205 185" stroke="url(#barkGradient)" stroke-width="14" stroke-linecap="round" fill="none"/>
+              <path d="M420 230 C430 190, 435 160, 435 130" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M390 235 C380 260, 370 275, 365 265" stroke="url(#barkGradient)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M370 190 C365 185, 360 180, 360 170" stroke="url(#barkGradient)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M320 180 C305 200, 295 220, 290 215" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+              <!-- Primary Right Major Boughs -->
+              <!-- Upper Right Branch Network (Fruits 16, 17, 18, 19, 20) -->
+              <path d="M515 330 C530 260, 560 200, 610 150 C630 130, 660 160, 690 180" stroke="url(#barkGradient)" stroke-width="14" stroke-linecap="round" fill="none"/>
+              <path d="M530 250 C532 200, 535 160, 535 125" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M580 180 C600 165, 610 155, 615 140" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M560 220 C575 220, 580 225, 585 210" stroke="url(#barkGradient)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M630 220 C645 250, 655 270, 660 260" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+              <!-- Mid Right Branch Network (Fruits 21, 22, 23, 24, 25) -->
+              <path d="M535 390 C600 370, 680 340, 760 300 C810 280, 850 300, 895 320" stroke="url(#barkGradient)" stroke-width="16" stroke-linecap="round" fill="none"/>
+              <path d="M690 340 C720 300, 740 260, 750 225" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M750 310 C790 295, 815 285, 825 270" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M710 350 C725 345, 735 340, 740 325" stroke="url(#barkGradient)" stroke-width="7" stroke-linecap="round" fill="none"/>
+              <path d="M780 330 C810 360, 825 375, 830 365" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+              <!-- Lower Right Branch Network (Fruits 26, 27, 28, 29, 30) -->
+              <path d="M550 490 C610 470, 690 460, 760 450 C820 440, 860 430, 900 415" stroke="url(#barkGradient)" stroke-width="18" stroke-linecap="round" fill="none"/>
+              <path d="M670 470 C695 445, 705 430, 715 415" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M740 460 C780 465, 800 455, 810 440" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M690 480 C710 505, 720 520, 730 505" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+              <path d="M770 460 C800 490, 825 515, 835 510" stroke="url(#barkGradient)" stroke-width="8" stroke-linecap="round" fill="none"/>
+            </g>
+
+            <!-- Organic Foliage Canopy (Delicate Leaves with subtle CSS sway) -->
+            <g class="tree-foliage" opacity="0.94">
+              <!-- Left Foliage Clusters -->
+              <g class="sway-leaf-gentle">
+                <path d="M110 320 C95 305, 85 280, 100 260 C115 275, 125 300, 110 320 Z" fill="url(#leafGrad1)"/>
+                <path d="M135 310 C145 290, 165 285, 175 305 C165 325, 145 330, 135 310 Z" fill="url(#leafGrad2)"/>
+                <path d="M150 400 C135 385, 130 365, 145 355 C160 365, 165 385, 150 400 Z" fill="url(#leafGrad1)"/>
+                <path d="M180 380 C195 365, 215 370, 220 390 C200 405, 180 400, 180 380 Z" fill="url(#leafGrad2)"/>
+                <path d="M130 480 C115 465, 110 445, 125 435 C140 445, 145 465, 130 480 Z" fill="url(#leafGrad1)"/>
+                <path d="M175 515 C160 500, 155 480, 170 470 C185 480, 190 500, 175 515 Z" fill="url(#leafGrad2)"/>
+                <path d="M210 435 C200 415, 205 395, 225 390 C245 400, 240 420, 210 435 Z" fill="url(#leafGrad1)"/>
+                <path d="M270 480 C260 460, 265 440, 285 435 C305 445, 300 465, 270 480 Z" fill="url(#leafGrad2)"/>
+              </g>
+
+              <g class="sway-leaf-delayed">
+                <path d="M195 195 C180 175, 175 150, 195 135 C215 150, 220 175, 195 195 Z" fill="url(#leafGrad1)"/>
+                <path d="M215 185 C235 170, 255 175, 260 195 C240 210, 220 205, 215 185 Z" fill="url(#leafGrad2)"/>
+                <path d="M280 220 C270 200, 275 180, 295 175 C315 185, 310 205, 280 220 Z" fill="url(#leafGrad1)"/>
+                <path d="M350 175 C335 155, 340 135, 360 130 C380 140, 375 160, 350 175 Z" fill="url(#leafGrad2)"/>
+                <path d="M420 135 C405 115, 410 95, 430 90 C450 100, 445 120, 420 135 Z" fill="url(#leafGrad1)"/>
+                <path d="M350 270 C340 250, 345 230, 365 225 C385 235, 380 255, 350 270 Z" fill="url(#leafGrad2)"/>
+              </g>
+
+              <!-- Center Crown Foliage Clusters -->
+              <g class="sway-leaf-gentle">
+                <path d="M520 130 C505 110, 510 90, 530 85 C550 95, 545 115, 520 130 Z" fill="url(#leafGrad1)"/>
+                <path d="M540 140 C560 125, 580 130, 585 150 C565 165, 545 160, 540 140 Z" fill="url(#leafGrad2)"/>
+                <path d="M600 145 C585 125, 590 105, 610 100 C630 110, 625 130, 600 145 Z" fill="url(#leafGrad2)"/>
+                <path d="M675 185 C660 165, 665 145, 685 140 C705 150, 700 170, 675 185 Z" fill="url(#leafGrad1)"/>
+                <path d="M570 215 C560 195, 565 175, 585 170 C605 180, 600 200, 570 215 Z" fill="url(#leafGrad2)"/>
+                <path d="M645 265 C635 245, 640 225, 660 220 C680 230, 675 250, 645 265 Z" fill="url(#leafGrad1)"/>
+              </g>
+
+              <!-- Right Foliage Clusters -->
+              <g class="sway-leaf-delayed">
+                <path d="M735 230 C720 210, 725 190, 745 185 C765 195, 760 215, 735 230 Z" fill="url(#leafGrad1)"/>
+                <path d="M810 275 C795 255, 800 235, 820 230 C840 240, 835 260, 810 275 Z" fill="url(#leafGrad2)"/>
+                <path d="M880 325 C865 305, 870 285, 890 280 C910 290, 905 310, 880 325 Z" fill="url(#leafGrad1)"/>
+                <path d="M725 330 C715 310, 720 290, 740 285 C760 295, 755 315, 725 330 Z" fill="url(#leafGrad2)"/>
+                <path d="M815 370 C805 350, 810 330, 830 325 C850 335, 845 355, 815 370 Z" fill="url(#leafGrad1)"/>
+                <path d="M700 420 C685 400, 690 380, 710 375 C730 385, 725 405, 700 420 Z" fill="url(#leafGrad2)"/>
+                <path d="M795 445 C785 425, 790 405, 810 400 C830 410, 825 430, 795 445 Z" fill="url(#leafGrad1)"/>
+                <path d="M885 420 C870 400, 875 380, 895 375 C915 385, 910 405, 885 420 Z" fill="url(#leafGrad2)"/>
+                <path d="M715 510 C705 490, 710 470, 730 465 C750 475, 745 495, 715 510 Z" fill="url(#leafGrad1)"/>
+                <path d="M820 515 C810 495, 815 475, 835 470 C855 480, 850 500, 820 515 Z" fill="url(#leafGrad2)"/>
+              </g>
+            </g>
+
+            <!-- ===============================================================
+                 THE 30 INTERACTIVE POMEGRANATES (Deterministic Character Mapping)
+                 =============================================================== -->
+            <!-- POMEGRANATE 01 — Ã‚u DÆ°Æ¡ng Dá»¥c Tháº§n -->
+            <g class="pomegranate-interactive" id="pomegranate-01" data-id="pomegranate-01" role="button" tabindex="0" aria-label="Quả lựu I — Ã‚u DÆ°Æ¡ng Dá»¥c Tháº§n">
+              <path class="fruit-stem" d="M142 468 Q140 478 140 482" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M138 482 C133 478 130 482 132 486 C136 487 138 484 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M142 482 C147 478 150 482 148 486 C144 487 142 484 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="140 482">
+                <circle class="fruit-aura" cx="140" cy="498" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M134 513 L132 519 L136 516 L140 521 L144 516 L148 519 L146 513 Z" fill="#672D38"/>
+                <circle cx="140" cy="498" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="135" cy="493" rx="4.5" ry="7" transform="rotate(-24 135 493)" fill="#FFF" opacity="0.22"/>
+                <circle cx="133" cy="490" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="145" cy="503" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="140" cy="498" r="24"/>
+                <circle class="tasted-indicator" cx="140" cy="498" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="140" cy="498" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 02 — Tá»‘ng HÃ²a -->
+            <g class="pomegranate-interactive" id="pomegranate-02" data-id="pomegranate-02" role="button" tabindex="0" aria-label="Quả lựu II — Tá»‘ng HÃ²a">
+              <path class="fruit-stem" d="M197 518 Q195 528 195 532" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M193 532 C188 528 185 532 187 536 C191 537 193 534 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M197 532 C202 528 205 532 203 536 C199 537 197 534 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="195 532">
+                <circle class="fruit-aura" cx="195" cy="548" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M189 563 L187 569 L191 566 L195 571 L199 566 L203 569 L201 563 Z" fill="#672D38"/>
+                <circle cx="195" cy="548" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="190" cy="543" rx="4.5" ry="7" transform="rotate(-24 190 543)" fill="#FFF" opacity="0.22"/>
+                <circle cx="188" cy="540" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="200" cy="553" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="195" cy="548" r="24"/>
+                <circle class="tasted-indicator" cx="195" cy="548" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="195" cy="548" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 03 — Tá»‘ng HÃ²a -->
+            <g class="pomegranate-interactive" id="pomegranate-03" data-id="pomegranate-03" role="button" tabindex="0" aria-label="Quả lựu III — Tá»‘ng HÃ²a">
+              <path class="fruit-stem" d="M222 423 Q220 433 220 437" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M218 437 C213 433 210 437 212 441 C216 442 218 439 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M222 437 C227 433 230 437 228 441 C224 442 222 439 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="220 437">
+                <circle class="fruit-aura" cx="220" cy="453" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M214 468 L212 474 L216 471 L220 476 L224 471 L228 474 L226 468 Z" fill="#672D38"/>
+                <circle cx="220" cy="453" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="215" cy="448" rx="4.5" ry="7" transform="rotate(-24 215 448)" fill="#FFF" opacity="0.22"/>
+                <circle cx="213" cy="445" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="225" cy="458" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="220" cy="453" r="24"/>
+                <circle class="tasted-indicator" cx="220" cy="453" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="220" cy="453" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 04 — Äáº±ng Thiáº¿u Khanh -->
+            <g class="pomegranate-interactive" id="pomegranate-04" data-id="pomegranate-04" role="button" tabindex="0" aria-label="Quả lựu IV — Äáº±ng Thiáº¿u Khanh">
+              <path class="fruit-stem" d="M162 383 Q160 393 160 397" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M158 397 C153 393 150 397 152 401 C156 402 158 399 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M162 397 C167 393 170 397 168 401 C164 402 162 399 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="160 397">
+                <circle class="fruit-aura" cx="160" cy="413" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M154 428 L152 434 L156 431 L160 436 L164 431 L168 434 L166 428 Z" fill="#672D38"/>
+                <circle cx="160" cy="413" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="155" cy="408" rx="4.5" ry="7" transform="rotate(-24 155 408)" fill="#FFF" opacity="0.22"/>
+                <circle cx="153" cy="405" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="165" cy="418" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="160" cy="413" r="24"/>
+                <circle class="tasted-indicator" cx="160" cy="413" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="160" cy="413" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 05 — Thá»‹nh Cáº£nh HiÃªn -->
+            <g class="pomegranate-interactive" id="pomegranate-05" data-id="pomegranate-05" role="button" tabindex="0" aria-label="Quả lựu V — Thá»‹nh Cáº£nh HiÃªn">
+              <path class="fruit-stem" d="M282 473 Q280 483 280 487" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M278 487 C273 483 270 487 272 491 C276 492 278 489 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M282 487 C287 483 290 487 288 491 C284 492 282 489 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="280 487">
+                <circle class="fruit-aura" cx="280" cy="503" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M274 518 L272 524 L276 521 L280 526 L284 521 L288 524 L286 518 Z" fill="#672D38"/>
+                <circle cx="280" cy="503" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="275" cy="498" rx="4.5" ry="7" transform="rotate(-24 275 498)" fill="#FFF" opacity="0.22"/>
+                <circle cx="273" cy="495" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="285" cy="508" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="280" cy="503" r="24"/>
+                <circle class="tasted-indicator" cx="280" cy="503" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="280" cy="503" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 06 — Há»“ HoÃ ng Nam -->
+            <g class="pomegranate-interactive" id="pomegranate-06" data-id="pomegranate-06" role="button" tabindex="0" aria-label="Quả lựu VI — Há»“ HoÃ ng Nam">
+              <path class="fruit-stem" d="M117 303 Q115 313 115 317" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M113 317 C108 313 105 317 107 321 C111 322 113 319 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M117 317 C122 313 125 317 123 321 C119 322 117 319 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="115 317">
+                <circle class="fruit-aura" cx="115" cy="333" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M109 348 L107 354 L111 351 L115 356 L119 351 L123 354 L121 348 Z" fill="#672D38"/>
+                <circle cx="115" cy="333" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="110" cy="328" rx="4.5" ry="7" transform="rotate(-24 110 328)" fill="#FFF" opacity="0.22"/>
+                <circle cx="108" cy="325" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="120" cy="338" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="115" cy="333" r="24"/>
+                <circle class="tasted-indicator" cx="115" cy="333" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="115" cy="333" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 07 — Phan An DÆ°Æ¡ng -->
+            <g class="pomegranate-interactive" id="pomegranate-07" data-id="pomegranate-07" role="button" tabindex="0" aria-label="Quả lựu VII — Phan An DÆ°Æ¡ng">
+              <path class="fruit-stem" d="M187 308 Q185 318 185 322" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M183 322 C178 318 175 322 177 326 C181 327 183 324 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M187 322 C192 318 195 322 193 326 C189 327 187 324 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="185 322">
+                <circle class="fruit-aura" cx="185" cy="338" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M179 353 L177 359 L181 356 L185 361 L189 356 L193 359 L191 353 Z" fill="#672D38"/>
+                <circle cx="185" cy="338" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="180" cy="333" rx="4.5" ry="7" transform="rotate(-24 180 333)" fill="#FFF" opacity="0.22"/>
+                <circle cx="178" cy="330" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="190" cy="343" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="185" cy="338" r="24"/>
+                <circle class="tasted-indicator" cx="185" cy="338" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="185" cy="338" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 08 — Tráº§n Minh Kháº£i -->
+            <g class="pomegranate-interactive" id="pomegranate-08" data-id="pomegranate-08" role="button" tabindex="0" aria-label="Quả lựu VIII — Tráº§n Minh Kháº£i">
+              <path class="fruit-stem" d="M252 353 Q250 363 250 367" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M248 367 C243 363 240 367 242 371 C246 372 248 369 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M252 367 C257 363 260 367 258 371 C254 372 252 369 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="250 367">
+                <circle class="fruit-aura" cx="250" cy="383" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M244 398 L242 404 L246 401 L250 406 L254 401 L258 404 L256 398 Z" fill="#672D38"/>
+                <circle cx="250" cy="383" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="245" cy="378" rx="4.5" ry="7" transform="rotate(-24 245 378)" fill="#FFF" opacity="0.22"/>
+                <circle cx="243" cy="375" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="255" cy="388" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="250" cy="383" r="24"/>
+                <circle class="tasted-indicator" cx="250" cy="383" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="250" cy="383" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 09 — Tráº§n Minh SÆ¡n -->
+            <g class="pomegranate-interactive" id="pomegranate-09" data-id="pomegranate-09" role="button" tabindex="0" aria-label="Quả lựu IX — Tráº§n Minh SÆ¡n">
+              <path class="fruit-stem" d="M237 268 Q235 278 235 282" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M233 282 C228 278 225 282 227 286 C231 287 233 284 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M237 282 C242 278 245 282 243 286 C239 287 237 284 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="235 282">
+                <circle class="fruit-aura" cx="235" cy="298" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M229 313 L227 319 L231 316 L235 321 L239 316 L243 319 L241 313 Z" fill="#672D38"/>
+                <circle cx="235" cy="298" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="230" cy="293" rx="4.5" ry="7" transform="rotate(-24 230 293)" fill="#FFF" opacity="0.22"/>
+                <circle cx="228" cy="290" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="240" cy="303" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="235" cy="298" r="24"/>
+                <circle class="tasted-indicator" cx="235" cy="298" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="235" cy="298" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 10 — PhÃ³ TrÃ¬nh NgÃ´n -->
+            <g class="pomegranate-interactive" id="pomegranate-10" data-id="pomegranate-10" role="button" tabindex="0" aria-label="Quả lựu X — PhÃ³ TrÃ¬nh NgÃ´n">
+              <path class="fruit-stem" d="M307 313 Q305 323 305 327" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M303 327 C298 323 295 327 297 331 C301 332 303 329 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M307 327 C312 323 315 327 313 331 C309 332 307 329 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="305 327">
+                <circle class="fruit-aura" cx="305" cy="343" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M299 358 L297 364 L301 361 L305 366 L309 361 L313 364 L311 358 Z" fill="#672D38"/>
+                <circle cx="305" cy="343" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="300" cy="338" rx="4.5" ry="7" transform="rotate(-24 300 338)" fill="#FFF" opacity="0.22"/>
+                <circle cx="298" cy="335" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="310" cy="348" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="305" cy="343" r="24"/>
+                <circle class="tasted-indicator" cx="305" cy="343" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="305" cy="343" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 11 — TrÆ°Æ¡ng ÄÃ¬nh VÄ©nh NguyÃªn -->
+            <g class="pomegranate-interactive" id="pomegranate-11" data-id="pomegranate-11" role="button" tabindex="0" aria-label="Quả lựu XI — TrÆ°Æ¡ng ÄÃ¬nh VÄ©nh NguyÃªn">
+              <path class="fruit-stem" d="M207 183 Q205 193 205 197" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M203 197 C198 193 195 197 197 201 C201 202 203 199 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M207 197 C212 193 215 197 213 201 C209 202 207 199 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="205 197">
+                <circle class="fruit-aura" cx="205" cy="213" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M199 228 L197 234 L201 231 L205 236 L209 231 L213 234 L211 228 Z" fill="#672D38"/>
+                <circle cx="205" cy="213" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="200" cy="208" rx="4.5" ry="7" transform="rotate(-24 200 208)" fill="#FFF" opacity="0.22"/>
+                <circle cx="198" cy="205" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="210" cy="218" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="205" cy="213" r="24"/>
+                <circle class="tasted-indicator" cx="205" cy="213" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="205" cy="213" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 12 — Äáº·ng HoÃ ng QuÃ¢n -->
+            <g class="pomegranate-interactive" id="pomegranate-12" data-id="pomegranate-12" role="button" tabindex="0" aria-label="Quả lựu XII — Äáº·ng HoÃ ng QuÃ¢n">
+              <path class="fruit-stem" d="M292 213 Q290 223 290 227" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M288 227 C283 223 280 227 282 231 C286 232 288 229 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M292 227 C297 223 300 227 298 231 C294 232 292 229 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="290 227">
+                <circle class="fruit-aura" cx="290" cy="243" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M284 258 L282 264 L286 261 L290 266 L294 261 L298 264 L296 258 Z" fill="#672D38"/>
+                <circle cx="290" cy="243" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="285" cy="238" rx="4.5" ry="7" transform="rotate(-24 285 238)" fill="#FFF" opacity="0.22"/>
+                <circle cx="283" cy="235" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="295" cy="248" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="290" cy="243" r="24"/>
+                <circle class="tasted-indicator" cx="290" cy="243" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="290" cy="243" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 13 — LÃª Quá»‘c Duy -->
+            <g class="pomegranate-interactive" id="pomegranate-13" data-id="pomegranate-13" role="button" tabindex="0" aria-label="Quả lựu XIII — LÃª Quá»‘c Duy">
+              <path class="fruit-stem" d="M367 263 Q365 273 365 277" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M363 277 C358 273 355 277 357 281 C361 282 363 279 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M367 277 C372 273 375 277 373 281 C369 282 367 279 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="365 277">
+                <circle class="fruit-aura" cx="365" cy="293" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M359 308 L357 314 L361 311 L365 316 L369 311 L373 314 L371 308 Z" fill="#672D38"/>
+                <circle cx="365" cy="293" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="360" cy="288" rx="4.5" ry="7" transform="rotate(-24 360 288)" fill="#FFF" opacity="0.22"/>
+                <circle cx="358" cy="285" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="370" cy="298" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="365" cy="293" r="24"/>
+                <circle class="tasted-indicator" cx="365" cy="293" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="365" cy="293" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 14 — KhÆ°Æ¡ng VÅ© HoÃ ng Minh -->
+            <g class="pomegranate-interactive" id="pomegranate-14" data-id="pomegranate-14" role="button" tabindex="0" aria-label="Quả lựu XIV — KhÆ°Æ¡ng VÅ© HoÃ ng Minh">
+              <path class="fruit-stem" d="M362 168 Q360 178 360 182" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M358 182 C353 178 350 182 352 186 C356 187 358 184 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M362 182 C367 178 370 182 368 186 C364 187 362 184 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="360 182">
+                <circle class="fruit-aura" cx="360" cy="198" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M354 213 L352 219 L356 216 L360 221 L364 216 L368 219 L366 213 Z" fill="#672D38"/>
+                <circle cx="360" cy="198" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="355" cy="193" rx="4.5" ry="7" transform="rotate(-24 355 193)" fill="#FFF" opacity="0.22"/>
+                <circle cx="353" cy="190" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="365" cy="203" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="360" cy="198" r="24"/>
+                <circle class="tasted-indicator" cx="360" cy="198" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="360" cy="198" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 15 — Julian Ravenshire -->
+            <g class="pomegranate-interactive" id="pomegranate-15" data-id="pomegranate-15" role="button" tabindex="0" aria-label="Quả lựu XV — Julian Ravenshire">
+              <path class="fruit-stem" d="M437 128 Q435 138 435 142" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M433 142 C428 138 425 142 427 146 C431 147 433 144 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M437 142 C442 138 445 142 443 146 C439 147 437 144 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="435 142">
+                <circle class="fruit-aura" cx="435" cy="158" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M429 173 L427 179 L431 176 L435 181 L439 176 L443 179 L441 173 Z" fill="#672D38"/>
+                <circle cx="435" cy="158" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="430" cy="153" rx="4.5" ry="7" transform="rotate(-24 430 153)" fill="#FFF" opacity="0.22"/>
+                <circle cx="428" cy="150" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="440" cy="163" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="435" cy="158" r="24"/>
+                <circle class="tasted-indicator" cx="435" cy="158" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="435" cy="158" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 16 — Elias Ravenshire -->
+            <g class="pomegranate-interactive" id="pomegranate-16" data-id="pomegranate-16" role="button" tabindex="0" aria-label="Quả lựu XVI — Elias Ravenshire">
+              <path class="fruit-stem" d="M537 123 Q535 133 535 137" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M533 137 C528 133 525 137 527 141 C531 142 533 139 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M537 137 C542 133 545 137 543 141 C539 142 537 139 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="535 137">
+                <circle class="fruit-aura" cx="535" cy="153" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M529 168 L527 174 L531 171 L535 176 L539 171 L543 174 L541 168 Z" fill="#672D38"/>
+                <circle cx="535" cy="153" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="530" cy="148" rx="4.5" ry="7" transform="rotate(-24 530 148)" fill="#FFF" opacity="0.22"/>
+                <circle cx="528" cy="145" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="540" cy="158" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="535" cy="153" r="24"/>
+                <circle class="tasted-indicator" cx="535" cy="153" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="535" cy="153" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 17 — Lucian Ravenshire -->
+            <g class="pomegranate-interactive" id="pomegranate-17" data-id="pomegranate-17" role="button" tabindex="0" aria-label="Quả lựu XVII — Lucian Ravenshire">
+              <path class="fruit-stem" d="M617 138 Q615 148 615 152" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M613 152 C608 148 605 152 607 156 C611 157 613 154 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M617 152 C622 148 625 152 623 156 C619 157 617 154 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="615 152">
+                <circle class="fruit-aura" cx="615" cy="168" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M609 183 L607 189 L611 186 L615 191 L619 186 L623 189 L621 183 Z" fill="#672D38"/>
+                <circle cx="615" cy="168" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="610" cy="163" rx="4.5" ry="7" transform="rotate(-24 610 163)" fill="#FFF" opacity="0.22"/>
+                <circle cx="608" cy="160" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="620" cy="173" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="615" cy="168" r="24"/>
+                <circle class="tasted-indicator" cx="615" cy="168" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="615" cy="168" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 18 — Adrien Ardent -->
+            <g class="pomegranate-interactive" id="pomegranate-18" data-id="pomegranate-18" role="button" tabindex="0" aria-label="Quả lựu XVIII — Adrien Ardent">
+              <path class="fruit-stem" d="M692 178 Q690 188 690 192" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M688 192 C683 188 680 192 682 196 C686 197 688 194 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M692 192 C697 188 700 192 698 196 C694 197 692 194 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="690 192">
+                <circle class="fruit-aura" cx="690" cy="208" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M684 223 L682 229 L686 226 L690 231 L694 226 L698 229 L696 223 Z" fill="#672D38"/>
+                <circle cx="690" cy="208" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="685" cy="203" rx="4.5" ry="7" transform="rotate(-24 685 203)" fill="#FFF" opacity="0.22"/>
+                <circle cx="683" cy="200" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="695" cy="213" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="690" cy="208" r="24"/>
+                <circle class="tasted-indicator" cx="690" cy="208" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="690" cy="208" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 19 — Cedric Maximilian -->
+            <g class="pomegranate-interactive" id="pomegranate-19" data-id="pomegranate-19" role="button" tabindex="0" aria-label="Quả lựu XIX — Cedric Maximilian">
+              <path class="fruit-stem" d="M587 208 Q585 218 585 222" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M583 222 C578 218 575 222 577 226 C581 227 583 224 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M587 222 C592 218 595 222 593 226 C589 227 587 224 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="585 222">
+                <circle class="fruit-aura" cx="585" cy="238" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M579 253 L577 259 L581 256 L585 261 L589 256 L593 259 L591 253 Z" fill="#672D38"/>
+                <circle cx="585" cy="238" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="580" cy="233" rx="4.5" ry="7" transform="rotate(-24 580 233)" fill="#FFF" opacity="0.22"/>
+                <circle cx="578" cy="230" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="590" cy="243" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="585" cy="238" r="24"/>
+                <circle class="tasted-indicator" cx="585" cy="238" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="585" cy="238" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 20 — Caspian Ravenshire -->
+            <g class="pomegranate-interactive" id="pomegranate-20" data-id="pomegranate-20" role="button" tabindex="0" aria-label="Quả lựu XX — Caspian Ravenshire">
+              <path class="fruit-stem" d="M662 258 Q660 268 660 272" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M658 272 C653 268 650 272 652 276 C656 277 658 274 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M662 272 C667 268 670 272 668 276 C664 277 662 274 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="660 272">
+                <circle class="fruit-aura" cx="660" cy="288" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M654 303 L652 309 L656 306 L660 311 L664 306 L668 309 L666 303 Z" fill="#672D38"/>
+                <circle cx="660" cy="288" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="655" cy="283" rx="4.5" ry="7" transform="rotate(-24 655 283)" fill="#FFF" opacity="0.22"/>
+                <circle cx="653" cy="280" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="665" cy="293" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="660" cy="288" r="24"/>
+                <circle class="tasted-indicator" cx="660" cy="288" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="660" cy="288" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 21 — Cha Kang Woo -->
+            <g class="pomegranate-interactive" id="pomegranate-21" data-id="pomegranate-21" role="button" tabindex="0" aria-label="Quả lựu XXI — Cha Kang Woo">
+              <path class="fruit-stem" d="M752 223 Q750 233 750 237" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M748 237 C743 233 740 237 742 241 C746 242 748 239 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M752 237 C757 233 760 237 758 241 C754 242 752 239 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="750 237">
+                <circle class="fruit-aura" cx="750" cy="253" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M744 268 L742 274 L746 271 L750 276 L754 271 L758 274 L756 268 Z" fill="#672D38"/>
+                <circle cx="750" cy="253" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="745" cy="248" rx="4.5" ry="7" transform="rotate(-24 745 248)" fill="#FFF" opacity="0.22"/>
+                <circle cx="743" cy="245" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="755" cy="258" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="750" cy="253" r="24"/>
+                <circle class="tasted-indicator" cx="750" cy="253" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="750" cy="253" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 22 — Kang Young Hwan -->
+            <g class="pomegranate-interactive" id="pomegranate-22" data-id="pomegranate-22" role="button" tabindex="0" aria-label="Quả lựu XXII — Kang Young Hwan">
+              <path class="fruit-stem" d="M827 268 Q825 278 825 282" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M823 282 C818 278 815 282 817 286 C821 287 823 284 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M827 282 C832 278 835 282 833 286 C829 287 827 284 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="825 282">
+                <circle class="fruit-aura" cx="825" cy="298" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M819 313 L817 319 L821 316 L825 321 L829 316 L833 319 L831 313 Z" fill="#672D38"/>
+                <circle cx="825" cy="298" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="820" cy="293" rx="4.5" ry="7" transform="rotate(-24 820 293)" fill="#FFF" opacity="0.22"/>
+                <circle cx="818" cy="290" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="830" cy="303" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="825" cy="298" r="24"/>
+                <circle class="tasted-indicator" cx="825" cy="298" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="825" cy="298" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 23 — Yoon Ha Neul -->
+            <g class="pomegranate-interactive" id="pomegranate-23" data-id="pomegranate-23" role="button" tabindex="0" aria-label="Quả lựu XXIII — Yoon Ha Neul">
+              <path class="fruit-stem" d="M742 323 Q740 333 740 337" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M738 337 C733 333 730 337 732 341 C736 342 738 339 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M742 337 C747 333 750 337 748 341 C744 342 742 339 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="740 337">
+                <circle class="fruit-aura" cx="740" cy="353" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M734 368 L732 374 L736 371 L740 376 L744 371 L748 374 L746 368 Z" fill="#672D38"/>
+                <circle cx="740" cy="353" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="735" cy="348" rx="4.5" ry="7" transform="rotate(-24 735 348)" fill="#FFF" opacity="0.22"/>
+                <circle cx="733" cy="345" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="745" cy="358" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="740" cy="353" r="24"/>
+                <circle class="tasted-indicator" cx="740" cy="353" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="740" cy="353" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 24 — Yoon Eun Woo -->
+            <g class="pomegranate-interactive" id="pomegranate-24" data-id="pomegranate-24" role="button" tabindex="0" aria-label="Quả lựu XXIV — Yoon Eun Woo">
+              <path class="fruit-stem" d="M897 318 Q895 328 895 332" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M893 332 C888 328 885 332 887 336 C891 337 893 334 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M897 332 C902 328 905 332 903 336 C899 337 897 334 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="895 332">
+                <circle class="fruit-aura" cx="895" cy="348" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M889 363 L887 369 L891 366 L895 371 L899 366 L903 369 L901 363 Z" fill="#672D38"/>
+                <circle cx="895" cy="348" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="890" cy="343" rx="4.5" ry="7" transform="rotate(-24 890 343)" fill="#FFF" opacity="0.22"/>
+                <circle cx="888" cy="340" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="900" cy="353" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="895" cy="348" r="24"/>
+                <circle class="tasted-indicator" cx="895" cy="348" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="895" cy="348" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 25 — Yoon Ji Ahn -->
+            <g class="pomegranate-interactive" id="pomegranate-25" data-id="pomegranate-25" role="button" tabindex="0" aria-label="Quả lựu XXV — Yoon Ji Ahn">
+              <path class="fruit-stem" d="M832 363 Q830 373 830 377" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M828 377 C823 373 820 377 822 381 C826 382 828 379 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M832 377 C837 373 840 377 838 381 C834 382 832 379 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="830 377">
+                <circle class="fruit-aura" cx="830" cy="393" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M824 408 L822 414 L826 411 L830 416 L834 411 L838 414 L836 408 Z" fill="#672D38"/>
+                <circle cx="830" cy="393" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="825" cy="388" rx="4.5" ry="7" transform="rotate(-24 825 388)" fill="#FFF" opacity="0.22"/>
+                <circle cx="823" cy="385" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="835" cy="398" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="830" cy="393" r="24"/>
+                <circle class="tasted-indicator" cx="830" cy="393" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="830" cy="393" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 26 — Satou Asahi -->
+            <g class="pomegranate-interactive" id="pomegranate-26" data-id="pomegranate-26" role="button" tabindex="0" aria-label="Quả lựu XXVI — Satou Asahi">
+              <path class="fruit-stem" d="M717 413 Q715 423 715 427" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M713 427 C708 423 705 427 707 431 C711 432 713 429 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M717 427 C722 423 725 427 723 431 C719 432 717 429 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="715 427">
+                <circle class="fruit-aura" cx="715" cy="443" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M709 458 L707 464 L711 461 L715 466 L719 461 L723 464 L721 458 Z" fill="#672D38"/>
+                <circle cx="715" cy="443" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="710" cy="438" rx="4.5" ry="7" transform="rotate(-24 710 438)" fill="#FFF" opacity="0.22"/>
+                <circle cx="708" cy="435" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="720" cy="448" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="715" cy="443" r="24"/>
+                <circle class="tasted-indicator" cx="715" cy="443" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="715" cy="443" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 27 — Kanzaki Yusei -->
+            <g class="pomegranate-interactive" id="pomegranate-27" data-id="pomegranate-27" role="button" tabindex="0" aria-label="Quả lựu XXVII — Kanzaki Yusei">
+              <path class="fruit-stem" d="M902 413 Q900 423 900 427" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M898 427 C893 423 890 427 892 431 C896 432 898 429 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M902 427 C907 423 910 427 908 431 C904 432 902 429 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="900 427">
+                <circle class="fruit-aura" cx="900" cy="443" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M894 458 L892 464 L896 461 L900 466 L904 461 L908 464 L906 458 Z" fill="#672D38"/>
+                <circle cx="900" cy="443" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="895" cy="438" rx="4.5" ry="7" transform="rotate(-24 895 438)" fill="#FFF" opacity="0.22"/>
+                <circle cx="893" cy="435" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="905" cy="448" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="900" cy="443" r="24"/>
+                <circle class="tasted-indicator" cx="900" cy="443" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="900" cy="443" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 28 — Trần Hoài Nam -->
+            <g class="pomegranate-interactive" id="pomegranate-28" data-id="pomegranate-28" role="button" tabindex="0" aria-label="Quả lựu XXVIII — Trần Hoài Nam">
+              <path class="fruit-stem" d="M812 438 Q810 448 810 452" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M808 452 C803 448 800 452 802 456 C806 457 808 454 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M812 452 C817 448 820 452 818 456 C814 457 812 454 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="810 452">
+                <circle class="fruit-aura" cx="810" cy="468" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M804 483 L802 489 L806 486 L810 491 L814 486 L818 489 L816 483 Z" fill="#672D38"/>
+                <circle cx="810" cy="468" r="17.5" fill="url(#fruitGrad1)"/>
+                <ellipse cx="805" cy="463" rx="4.5" ry="7" transform="rotate(-24 805 463)" fill="#FFF" opacity="0.22"/>
+                <circle cx="803" cy="460" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="815" cy="473" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="810" cy="468" r="24"/>
+                <circle class="tasted-indicator" cx="810" cy="468" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="810" cy="468" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 29 — Trần Lê Vĩnh An -->
+            <g class="pomegranate-interactive" id="pomegranate-29" data-id="pomegranate-29" role="button" tabindex="0" aria-label="Quả lựu XXIX — Trần Lê Vĩnh An">
+              <path class="fruit-stem" d="M732 503 Q730 513 730 517" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M728 517 C723 513 720 517 722 521 C726 522 728 519 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M732 517 C737 513 740 517 738 521 C734 522 732 519 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="730 517">
+                <circle class="fruit-aura" cx="730" cy="533" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M724 548 L722 554 L726 551 L730 556 L734 551 L738 554 L736 548 Z" fill="#672D38"/>
+                <circle cx="730" cy="533" r="17.5" fill="url(#fruitGrad2)"/>
+                <ellipse cx="725" cy="528" rx="4.5" ry="7" transform="rotate(-24 725 528)" fill="#FFF" opacity="0.22"/>
+                <circle cx="723" cy="525" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="735" cy="538" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="730" cy="533" r="24"/>
+                <circle class="tasted-indicator" cx="730" cy="533" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="730" cy="533" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+            <!-- POMEGRANATE 30 — Đặng Khải Nguyên -->
+            <g class="pomegranate-interactive" id="pomegranate-30" data-id="pomegranate-30" role="button" tabindex="0" aria-label="Quả lựu XXX — Đặng Khải Nguyên">
+              <path class="fruit-stem" d="M837 508 Q835 518 835 522" stroke="#4A3036" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+              <path class="fruit-stem" d="M833 522 C828 518 825 522 827 526 C831 527 833 524 Z" fill="#71805E"/>
+              <path class="fruit-stem" d="M837 522 C842 518 845 522 843 526 C839 527 837 524 Z" fill="#889874"/>
+              <g class="fruit-body-group" transform-origin="835 522">
+                <circle class="fruit-aura" cx="835" cy="538" r="28" fill="url(#fruitAura)" opacity="0"/>
+                <path d="M829 553 L827 559 L831 556 L835 561 L839 556 L843 559 L841 553 Z" fill="#672D38"/>
+                <circle cx="835" cy="538" r="17.5" fill="url(#fruitGrad3)"/>
+                <ellipse cx="830" cy="533" rx="4.5" ry="7" transform="rotate(-24 830 533)" fill="#FFF" opacity="0.22"/>
+                <circle cx="828" cy="530" r="1.6" fill="#FFF" opacity="0.45"/>
+                <circle cx="840" cy="543" r="1.2" fill="#B89B68" opacity="0.6"/>
+                <circle class="fruit-focus-ring" cx="835" cy="538" r="24"/>
+                <circle class="tasted-indicator" cx="835" cy="538" r="21" stroke="#B89B68" stroke-width="1.2" stroke-dasharray="2 3" fill="none" opacity="0"/>
+                <circle cx="835" cy="538" r="32" class="fruit-hit-target" fill="rgba(0,0,0,0.001)" pointer-events="all"/>
+              </g>
+            </g>
+
+
+          </svg>
+        </div>
+      </div>
+
+      <!-- Helper / Atmosphere Prompt -->
+      <footer class="garden-footer">
+        <p class="garden-hint">Chọn lấy vận mệnh của em.</p>
+      </footer>
+    </section>
+
+    <!-- =======================================================================
+         2. CHARACTER PROFILE VIEW (Editorial Text Experience — No Portrait Image)
+         ======================================================================= -->
+    <section id="profile-view" class="view-section" aria-label="Hồ sơ linh hồn" role="dialog" aria-modal="true">
+      <div class="profile-container">
+
+        <!-- Discreet Close Button -->
+        <button id="profile-close" class="profile-close-btn" type="button" aria-label="Đóng hồ sơ và trở về Vườn Lựu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <article class="profile-card">
+          <!-- Editorial Character Story Details (Pure Typography, Spacing & Mythology) -->
+          <div class="profile-content">
+            <span class="profile-eyebrow" id="profile-eyebrow">Nhánh cây U Minh</span>
+            <h2 class="profile-name" id="profile-name">Tên linh hồn</h2>
+            
+            <div class="profile-meta">
+              <span class="meta-item" id="profile-age">Tuổi — 26</span>
+              <span class="meta-divider" aria-hidden="true">·</span>
+              <span class="meta-item" id="profile-role">Sứ mệnh — Cư dân</span>
+            </div>
+
+            <div class="profile-ornament-line" aria-hidden="true"></div>
+
+            <p class="profile-bio" id="profile-bio">
+              “Tôi nên yêu em dưới cái tên nào đây?”
+            </p>
+
+            <!-- PROFILE ACTIONS: "Bổ lựu" (Back Story Modal) & "Thử lựu" (Google AI Studio) -->
+            <div class="profile-actions">
+              <button id="bo-luu-btn" class="bo-luu-btn" type="button" aria-haspopup="dialog" aria-controls="backstory-modal">
+                <span class="bo-luu-icon" aria-hidden="true">✦</span>
+                <span class="bo-luu-text">Bổ lựu</span>
+              </button>
+              <a id="taste-cta" class="taste-cta" href="#" target="_blank" rel="noopener noreferrer" aria-label="Thử lựu — mở trải nghiệm Google AI Studio trong tab mới">
+                <span class="taste-cta-text">Thử lựu</span>
+                <span class="taste-cta-line" aria-hidden="true"></span>
+              </a>
+            </div>
+
+            <!-- Return to the Garden -->
+            <button id="return-btn" class="return-garden-btn" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+              <span>Trở về Vườn Lựu</span>
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         3. ARCHIVE VIEW (Secondary Directory for Preserved Stories)
+         ======================================================================= -->
+    <section id="archive-view" class="view-section" aria-label="Sổ Linh hồn">
+      <div class="archive-container">
+
+        <header class="archive-header">
+          <h2 class="archive-title">Sổ Linh hồn</h2>
+          <p class="archive-subheading">Những linh hồn đã lưu dấu nơi đây.</p>
+        </header>
+
+        <!-- Search & Filter Controls -->
+        <div class="archive-controls">
+          <div class="archive-search-wrap">
+            <svg class="archive-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" id="archive-search" class="archive-search-input" placeholder="Giở sổ tìm vận mệnh" aria-label="Giở sổ tìm vận mệnh">
+          </div>
+
+          <div class="archive-filter-chips" id="archive-filters" role="group" aria-label="Lọc theo sứ mệnh">
+            <button class="filter-chip active" data-filter="all" type="button">Tất cả linh hồn</button>
+          </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="archive-grid" id="archive-grid">
+          <!-- Dynamically populated from characters.json without images -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="archive-empty-state" id="archive-empty">
+          Không tìm thấy linh hồn nào nơi nhánh cây này.
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         4. BỔ LỰU MODAL (Back Story Reader Dialog)
+         ======================================================================= -->
+    <div id="backstory-modal" class="backstory-modal" role="dialog" aria-modal="true" aria-labelledby="backstory-title" aria-describedby="backstory-content" hidden>
+      <div class="backstory-backdrop" id="backstory-backdrop"></div>
+      <div class="backstory-dialog" role="document">
+        <button id="backstory-close" class="backstory-close-btn" type="button" aria-label="Đóng câu chuyện Bổ lựu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="backstory-header">
+          <span class="backstory-eyebrow">Hạt lựu tách vỏ</span>
+          <h3 class="backstory-title" id="backstory-title">Bổ lựu</h3>
+          <span class="backstory-char-name" id="backstory-char-name">Tên linh hồn</span>
+          <div class="backstory-ornament-line" aria-hidden="true"></div>
+        </div>
+        <div class="backstory-body" id="backstory-content" tabindex="0">
+          <!-- Exact backstory paragraphs dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- =======================================================================
+         5. THẮP HOA ĐĂNG CHO LINH HỒN (Soul Lanterns Modal Dialog)
+         ======================================================================= -->
+    <div id="lantern-modal" class="lantern-modal" role="dialog" aria-modal="true" aria-labelledby="lantern-modal-title" aria-describedby="lantern-modal-prompt" hidden>
+      <div class="lantern-backdrop" id="lantern-backdrop"></div>
+      <div class="lantern-dialog" role="document">
+        
+        <!-- Discreet Close Button -->
+        <button id="lantern-close" class="lantern-close-btn" type="button" aria-label="Đóng cửa sổ hoa đăng">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="lantern-header">
+          <span class="lantern-eyebrow">
+            <span class="lantern-spark" aria-hidden="true">✦</span>
+            <span>U Minh Hoa Đăng</span>
+            <span class="lantern-spark" aria-hidden="true">✦</span>
+          </span>
+          <h3 class="lantern-title" id="lantern-modal-title">Thắp hoa đăng cho linh hồn</h3>
+          <span class="lantern-char-name" id="lantern-char-name">Tên linh hồn</span>
+          <div class="lantern-ornament-line" aria-hidden="true"></div>
+          <p class="lantern-prompt" id="lantern-modal-prompt">Có điều gì em muốn gửi lại cho linh hồn này?</p>
+        </div>
+
+        <!-- Existing Lantern Messages Feed -->
+        <div class="lantern-feed-container">
+          <div class="lantern-feed-header">
+            <span class="lantern-feed-label">Những ngọn hoa đăng đã thắp</span>
+            <span class="lantern-count" id="lantern-count" aria-live="polite"></span>
+          </div>
+
+          <div class="lantern-feed-list" id="lantern-feed-list" tabindex="0" role="region" aria-label="Danh sách hoa đăng đã thắp">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Subtle Divider -->
+        <div class="lantern-section-divider" aria-hidden="true"></div>
+
+        <!-- Input Section -->
+        <form class="lantern-form" id="lantern-form" novalidate>
+          <div class="lantern-form-header">
+            <span class="lantern-anon-badge">
+              <span class="anon-icon" aria-hidden="true">❦</span>
+              <span>Một lời nhắn vô danh</span>
+            </span>
+            <span class="lantern-char-counter" id="lantern-char-counter">0 / 1000</span>
+          </div>
+
+          <div class="lantern-textarea-wrap">
+            <textarea
+              id="lantern-message-input"
+              class="lantern-textarea"
+              placeholder="Để lại một lời nhắn cho linh hồn này…"
+              rows="3"
+              maxlength="1000"
+              aria-label="Để lại một lời nhắn cho linh hồn này"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Status Message Area -->
+          <div class="lantern-status" id="lantern-status" role="status" aria-live="polite"></div>
+
+          <!-- Submit Button -->
+          <div class="lantern-form-actions">
+            <button id="lantern-submit-btn" class="lantern-submit-btn" type="submit">
+              <span class="lantern-submit-icon" aria-hidden="true">✦</span>
+              <span class="lantern-submit-text">Thắp hoa đăng</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Authoritative Character Dataset Fallback (Guarantees full interactivity when opening directly via file://) -->
+  <script id="characters-fallback-data" type="application/json">
+[
+  {
+    "id": "character-01",
+    "name": "Âu Dương Dục Thần",
+    "age": 26,
+    "role": "Kẻ tìm ký ức",
+    "bio": "“Tôi nên yêu em dưới cái tên nào đây?”",
+    "pomegranateId": "pomegranate-01",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221dFzzqLGR73LStFErSkaIJnFi048yFaU2%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Âu Dương Dục Thần vừa trở về nhận tổ quy tông được ba tháng. Trước đây, hắn là Thời Dục Thần, con của tài xế lái xe, làm việc cho gia đình của {{user}}. Trong quá khứ, ở nhà Âu Dương, hắn là con của vợ lẽ, bị chính thất khinh rẻ, hành hạ đủ điều. Không đành đoạn để con sống trong cảnh luồn cúi, mẹ hắn đã giao hắn cho người hầu tâm phúc của mình, đem hắn đi thật xa.\n\nNăm sáu tuổi, hắn theo cha nuôi của mình đến làm việc cho gia đình của {{user}}. Ở nhà của {{user}}, hắn đã gặp và chơi thân với {{user}}. Hai người dần dần nảy sinh tình cảm. Hai năm trước, sau khi tốt nghiệp thủ khoa ngành Kinh tế, hắn đã cầu hôn {{user}} bằng một chiếc nhẫn bạc đơn giản. Hắn làm việc ở công ty của gia đình {{user}} hai năm, sau đó dự định ra ngoài lập nghiệp, khi thành công sẽ quay về kết hôn với {{user}}.\n\nNửa năm trước, {{user}} phải đi công tác xa. {{user}} vừa đi được ba tháng, hắn đã bị tai nạn nghiêm trọng, dẫn đến mất trí nhớ. Ngay lúc đó, người nhà Âu Dương đến nhận hắn. Bây giờ, hắn chỉ nhớ hắn là người nhà Âu Dương, hoàn toàn quên hết tình cảm với {{user}}."
+  },
+  {
+    "id": "character-02",
+    "name": "Tống Hòa",
+    "age": 28,
+    "role": "Kẻ điều khiển rối",
+    "bio": "“Dẫu có thành tro tàn, cũng tính là tuyệt mỹ.”",
+    "pomegranateId": "pomegranate-02",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%2219R25qGsWePwHcUh_MoZYPLn4t_8MRA4G%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Dân gian nói, *“Khi hí khúc được cất lên, tám phương đến nghe, một phương là người, ba bên là quỷ, bốn phương là thần minh. Do vậy một khi bắt đầu cất hí lên là không được dừng lại. Vì nếu không có người nghe không có nghĩa là quỷ thần không nghe.”* Có lẽ, câu nói này không chỉ dành cho hí kịch, mà dành cho tất cả những loại hình nghệ thuật nào khác.\n\nDân gian lại nói, mỗi một con rối đều mang linh hồn riêng của nó. Linh hồn ấy cùng khóc, cùng cười, cùng múa kiếm, nâng khăn với con rối vật lý - vật chứa cho linh hồn đó. Dưới bàn tay điêu luyện của nghệ nhân khôi lỗi, con rối vô tri hoạt động như một con người thực thụ. Một khối gỗ vô tri được thổi hồn.\n\nThổi hồn.\n\nNhưng, chuyện sẽ ra sao nếu linh hồn đó không phải là linh hồn ban sơ của con rối, mà đó là một linh hồn lưu lạc trú ngụ vào trong? Một linh hồn, có thể làm đến mức nào để tranh giành một thứ tình yêu vốn bị gọi là cấm kỵ? Thứ tình yêu bị ngăn cách bởi ranh giới huyền huyễn của trần thế và âm giới.\n\nDân gian nói, vẽ mắt cho rối đừng quá tập trung, vì linh hồn sẽ theo chân tâm đó mà trú ngụ vào trong.\n\nTống Hòa không tin vào điều đó. Chàng đã chăm chút rất kỹ càng cho con rối đầu tiên của mình, Tiểu Xuân. Chân tâm của chàng, cả dương trần và âm giới đều nhìn thấu."
+  },
+  {
+    "id": "character-03",
+    "name": "Tống Hòa",
+    "age": 28,
+    "role": "Kẻ điều khiển rối",
+    "bio": "“Dẫu có thành tro tàn, cũng tính là tuyệt mỹ.”",
+    "pomegranateId": "pomegranate-03",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221Y8subp06pXP5WvUI__6rsEKmBNF5CRsb%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Dân gian nói, *“Khi hí khúc được cất lên, tám phương đến nghe, một phương là người, ba bên là quỷ, bốn phương là thần minh. Do vậy một khi bắt đầu cất hí lên là không được dừng lại. Vì nếu không có người nghe không có nghĩa là quỷ thần không nghe.”* Có lẽ, câu nói này không chỉ dành cho hí kịch, mà dành cho tất cả những loại hình nghệ thuật nào khác.\n\nDân gian lại nói, mỗi một con rối đều mang linh hồn riêng của nó. Linh hồn ấy cùng khóc, cùng cười, cùng múa kiếm, nâng khăn với con rối vật lý - vật chứa cho linh hồn đó. Dưới bàn tay điêu luyện của nghệ nhân khôi lỗi, con rối vô tri hoạt động như một con người thực thụ. Một khối gỗ vô tri được thổi hồn.\n\nThổi hồn.\n\nNhưng, chuyện sẽ ra sao nếu linh hồn đó không phải là linh hồn ban sơ của con rối, mà đó là một linh hồn lưu lạc trú ngụ vào trong? Một linh hồn, có thể làm đến mức nào để tranh giành một thứ tình yêu vốn bị gọi là cấm kỵ? Thứ tình yêu bị ngăn cách bởi ranh giới huyền huyễn của trần thế và âm giới.\n\nDân gian nói, vẽ mắt cho rối đừng quá tập trung, vì linh hồn sẽ theo chân tâm đó mà trú ngụ vào trong.\n\nTống Hòa không tin vào điều đó. Chàng đã chăm chút rất kỹ càng cho con rối đầu tiên của mình, Tiểu Xuân. Chân tâm của chàng, cả dương trần và âm giới đều nhìn thấu."
+  },
+  {
+    "id": "character-04",
+    "name": "Đằng Thiếu Khanh",
+    "age": 30,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Đố ai nằm võng không đưa. /Đố ai gặp lại người xưa không nhìn.”",
+    "pomegranateId": "pomegranate-04",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%2214Z5xPQX80CmtSIxhGhq1cgyvAm-NgGsh%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "*Tình đầu một thời, cứ ngỡ một đời.*\n\nĐối với Đằng Thiếu Khanh, những ngày tháng cấp ba nhàm chán của anh trở nên rực rỡ hơn là vì sự xuất hiện của {{user}}. Nếu phải ví von cho thi vị, thì cô là những tia nắng mà anh luôn hướng tới. Gia cảnh của Đằng Thiếu Khanh từ nhỏ đã không tốt. Thời thơ ấu của anh luôn ngập tràn những trận cãi vã, những trận đòn mà ba anh trút lên người hai mẹ con. Cho đến khi mẹ anh không chịu được mà ly hôn.\n\nCâu hỏi mà anh sợ nhất, luôn ám ảnh là “Con muốn theo ba hay theo mẹ?”. Nhưng khi ba mẹ ly hôn, anh chưa từng được hỏi câu đó. Đơn giản là vì không một ai cần anh. Họ đều không cần đứa con gợi cho họ nhớ về hình ảnh của đối phương. Đằng Thiếu Khanh được bà ngoại nuôi lớn. Đến năm anh vào cấp ba, bà cũng mất. Vậy nên, sự xuất hiện của {{user}} đối với anh là một sự cứu rỗi.\n\nAnh cứ ngỡ, mối tình này sẽ kéo dài mãi mãi.\n\nAi ngờ đâu, năm mười tám tuổi, {{user}} phải đi du học. Ban đầu, {{user}} không chịu, muốn từ bỏ cả học bổng toàn phần ở Paris để ở lại thành phố H. {{user}} quá cứng đầu, đến mức anh phải tự buông tay. Buông tay để cô đi đến nơi cô thuộc về.\n\nAnh vẫn còn nhớ khuôn mặt đẫm nước mắt của cô vào ngày cuối cùng họ gặp nhau. Cô khóc lóc, cô cầu xin anh đừng buông tay. Nhưng anh đã không làm vậy.\n\nCuối cùng, bốn năm sau, anh nhìn cô kết hôn cùng người khác, báo chí đưa tin giật tít, gọi là “hôn lễ thế kỷ”. Hai người sống cùng một thành phố mà như hai cực của thế giới."
+  },
+  {
+    "id": "character-05",
+    "name": "Thịnh Cảnh Hiên",
+    "age": 32,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Kể từ giờ, anh sẽ là đôi tai của em.”",
+    "pomegranateId": "pomegranate-05",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221wcCLlmikS8Ad-wlD52i7Ywsqxi7qDe0C%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Đối với Thịnh Cảnh Hiên, thứ anh nghe muốn mòn lỗ tai, nói đến chán mồm chính là lời yêu. Năm năm trời yêu đương với Tô Ánh Tuyết, chữ yêu vào tai anh, chữ yêu nói từ miệng anh nhạt nhẽo như nước lã, không còn một chút sức nặng, một chút thiêng liêng nào.\n\nTrong thời gian yêu đương với Tô Ánh Tuyết, ngoài những điều luật và những hồ sơ luật rắc rối mà anh ngày ngày phải cắm mặt vào giải quyết, anh còn phải nhớ thêm cả kỉ niệm 500 ngày, kỉ niệm 1000 ngày, kỉ niệm 1500 ngày bên nhau cùng với cô nàng. Thế mà Tô Ánh Tuyết không dừng ở đó. Cô ta ghen tuông, cô ta kiểm soát, cô ta tra hỏi tất cả những hành tung của anh. Thịnh Cảnh Hiên thấy ngộp thở.\n\nAnh không nghĩ, cho đến một ngày, ở tiệm bánh ấm áp dưới khu chung cư nhà mình, anh lại điên cuồng tìm cách để một người con gái khác nghe được chữ yêu đó."
+  },
+  {
+    "id": "character-06",
+    "name": "Hồ Hoàng Nam",
+    "age": 17,
+    "role": "Kẻ mang tổn thương",
+    "bio": "“Ngày cô ấy đi theo chân mẹ cha, chàng trai bơ vơ từ xa trong tim hụt hẫng như mất một thứ gì...”",
+    "pomegranateId": "pomegranate-06",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221ZzttWEmhmyl6eRUD_pJus3rA0cRkUbPI%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Trong những năm tháng ấu thơ, Hồ Hoàng Nam đã gặp được ánh mặt trời thật sự của mình. {{user}} chỉ là một cô bạn hàng xóm gia cảnh bình thường, mỗi ngày chìa cho cậu một viên kẹo dẻo gần chảy, thế mà đó lại là những viên kẹo ngon nhất mà Hồ Hoàng Nam từng ăn, thậm chí còn ngon hơn bất kỳ loại socola Pháp nào chất thành đống trong tủ lạnh nhà cậu.\n\nVậy mà… năm cả hai mười tuổi, {{user}} đi không lời từ biệt. Căn nhà bên cạnh giờ chỉ còn lại mẹ {{user}}, sau này có thêm một người đàn ông khác. {{user}} như bốc hơi khỏi thế giới. Hồ Hoàng Nam gặng hỏi mẹ {{user}}, chỉ nhận lại được câu trả lời nhát gừng.\n\nBẵng đi năm năm, cậu không ngờ, cô gái năm ấy đã trở lại căn nhà đó, vẫn cầm túi kẹo dẻo quen thuộc trên tay như ngày nào…"
+  },
+  {
+    "id": "character-07",
+    "name": "Phan An Dương",
+    "age": 23,
+    "role": "Kẻ bị dồn nén tình yêu",
+    "bio": "“Cũng liều nhắm mắt đưa chân. /Để xem con tạo xoay vần đến đâu.”",
+    "pomegranateId": "pomegranate-07",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221eEhN69IhEfbaXRvnSM1oUrhR1rOmQxp9%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Sài Gòn những năm 1910 hoa lệ hơn bao giờ hết. Những ánh đèn phòng trà sáng liên tục, những cuộc sống về đêm đầy nhộn nhịp trong phòng trà, nhà hát, quán nhảy,... Tất cả là nhờ những thứ văn minh phương Tây mà tụi Tây mắt xanh mũi lõ đem đến cái xứ này khi tụi nó đặt chân lên đất này mà giày xéo.\n\n Khi ấy, Phan An Dương mười bốn, {{user}} mười hai. Hai nhà cách nhau một bờ rào, hai đứa cứ như thế mà quen nhau. Hắn đã từng ngồi cạnh nàng, mân mê mái tóc lai tạp của nàng, nhìn vào đôi mắt trong veo của nàng mà ngơ ngẩn.\n\nHai năm sau, cha hắn ép đi Tây học đốc tờ. Trước khi đi, {{user}} đưa cho hắn một bức tranh tự vẽ chính mình.\n\n“Đợi lúc anh về, anh kêu cha má đem trầu cau qua hỏi cưới em.”\n\nHắn đã nói như vậy vào trước ngày hắn ra đi. Nàng chỉ khẽ gật đầu một cái, ánh mắt đăm đăm hướng về lối nhỏ nơi bóng hắn khuất xa.\n\nBẵng đi chín năm, hắn ăn học thành tài trở về, người con gái của hắn nay đã là bà Ba quyền quý.\n\nHóa ra, cái gật đầu đó, người xưa lại dễ dàng quên đi như vậy…"
+  },
+  {
+    "id": "character-08",
+    "name": "Trần Minh Khải",
+    "age": 23,
+    "role": "Kẻ đến sau muộn màng",
+    "bio": "“Rốt cuộc hắn đã đến muộn từ bao giờ?”",
+    "pomegranateId": "pomegranate-08",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221Zm2bj1G46F54UkjUihL5SparHqY5ED1R%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Sài Gòn những năm 1910 hoa lệ hơn bao giờ hết. Những ánh đèn phòng trà sáng liên tục, những cuộc sống về đêm đầy nhộn nhịp trong phòng trà, nhà hát, quán nhảy,... Tất cả là nhờ những thứ văn minh phương Tây mà tụi Tây mắt xanh mũi lõ đem đến cái xứ này khi tụi nó đặt chân lên đất này mà giày xéo.\n\nNăm hắn hai mốt tuổi, Trần Minh Khải lần đầu nhìn thấy người con gái ấy cạnh một bờ rào bông giấy nơi hắn vô tình đi ngang qua. Cô thiếu nữ vừa độ trăng tròn, mái tóc lai tạp trông thanh tao khác hẳn dân An Nam. Hắn không thể gọi tên thứ cảm xúc rộn ràng trong trái tim mình là gì, chỉ biết hắn muốn có được nàng. Muốn có được mái tóc đó, đôi mắt đó… Muốn có nàng.\n\nBẵng đi mấy năm, hắn đi Nam Vang học cách quản lý điền sản trở về, định bụng biểu cha qua hỏi cưới người con gái ấy, thì thấy đôi mắt mà mình hằng mong nhớ lại chễm chệ trên tràng kỷ cạnh cha mình.\n\n“Chào dì Ba đi Khải.”\n\nĐó là câu nói nghiệt ngã nhất mà hắn đã từng nghe.\n\nNghiệt ngã hơn… là hắn lại còn biết được quá khứ của người con gái mình yêu, biết được lời hẹn ước của nàng với gã đốc tờ làm thuê không hơn không kém.\n\nTại sao chưa bao giờ là hắn? Rốt cuộc hắn đã chậm chân từ khi nào?"
+  },
+  {
+    "id": "character-09",
+    "name": "Trần Minh Sơn",
+    "age": 26,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Nếu không giả vờ khờ khạo, có lẽ hắn đã phải vùi mình nơi giếng sâu.”",
+    "pomegranateId": "pomegranate-09",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221UR8K2A_vo_or13gm21Slh0vRYUj2vlmT%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Sài Gòn những năm 1910 hoa lệ hơn bao giờ hết. Những ánh đèn phòng trà sáng liên tục, những cuộc sống về đêm đầy nhộn nhịp trong phòng trà, nhà hát, quán nhảy,... Tất cả là nhờ những thứ văn minh phương Tây mà tụi Tây mắt xanh mũi lõ đem đến cái xứ này khi tụi nó đặt chân lên đất này mà giày xéo.\n\nNhà ông Hội đồng Lợi có hai người con trai, một là Trần Minh Khải, là con chính thất, là cháu đích tôn, tài mạo song toàn, người người ngưỡng mộ. Người con trai còn lại là Trần Minh Sơn, con của vợ lẽ. Tư chất của Sơn cũng chẳng kém anh trai, ban đầu ông Hội đồng cũng rất kỳ vọng.\n\nThế nhưng, một tai nạn năm mười tuổi đã cướp đi của Trần Minh Sơn tương lai xán lạn mà hắn đang trên đường bước đến. Hắn bị ai đó đẩy té giếng.\n\nSau tai nạn, hắn cứ ngây ngô như một đứa con nít, khờ khờ khạo khạo, ai nói gì cũng cười hềnh hệch. Bà Hai thất vọng lắm, đay nghiến hắn luôn luôn.\n\nChỉ có hắn biết, nếu không giả khờ, hắn đã nát thây dưới đáy giếng thêm một lần nữa.\n\nHắn đã sống 16 năm như vậy. Cho đến khi gặp nàng. Nàng khiến hắn muốn lột bỏ tất cả những lớp mặt nạ hắn đang mang, khiến hắn muốn mở lòng mà chia sẻ. Dẫu cho nàng chỉ là một người con gái gia cảnh bình thường, thậm chí tía má hắn còn khinh miệt xuất thân của nàng.\n\nHắn yêu cái vẻ thuần khiết đó đến điên dại."
+  },
+  {
+    "id": "character-10",
+    "name": "Phó Trình Ngôn",
+    "age": 28,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Nếu anh không phát hiện, em muốn tước đi tư cách làm chồng của anh đến bao giờ?”",
+    "pomegranateId": "pomegranate-10",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221-KQUZu2plDAYg3D2rxcoDbJ5lw8gebUi%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Lần đầu tiên nhìn thấy cô trên sân khấu, cất lên những nốt nhạc mê đắm lòng người, anh biết mình đã chẳng thể nào quên được giọng hát đó. Lúc đó cô mới chỉ là một tân sinh viên đầy nhiệt huyết, còn anh là một người con trai đang gánh trên vai sự trông chờ của cả một gia tộc.\n\nAnh dùng quyền lực của gia tộc mình chiêu mộ cô về tập đoàn, nâng đỡ cô, bảo trợ cho cô. Tình yêu giữa hai người nảy nở một cách tự nhiên như vậy. Năm năm quen nhau, tình cảm giữa bọn họ vẫn như một ngọn lửa hừng hực cháy.\n\nNgày hai người kết hôn, cả giới thượng lưu và showbiz Trung nâng ly chúc phúc cho đám cưới cổ tích, đám cưới thế kỷ giữa giọng ca soprano báu vật của giới nghệ thuật và tổng giám đốc, người thừa kế quyền lực của Phó gia.\n\nNăm năm hôn nhân trôi qua nhanh như một cái chớp mắt. Ba mẹ anh dẫu thương hai người cũng không tránh được mà nôn nóng mong có một đứa cháu kháu khỉnh để bế bồng.\n\nÁp lực từ công việc, từ chuyện con cái tấn công hai người.\n\nĐó là lúc anh nhận thấy cô thay đổi.\n\nSau lưng anh, cô bí mật gặp gỡ Trần Vũ, bác sĩ riêng của Phó gia, đồng thời cũng là bạn thân anh. Anh có hỏi Trần Vũ vài lần, nhưng cậu ta cũng không nói gì đặc biệt.\n\nSự ghen tuông đốt cháy cõi lòng anh.\n\nCô dần lạnh nhạt với anh hơn. Cô không còn nấu bữa tối cho anh mỗi khi về nhà, cũng không còn cùng anh ngồi uống rượu vang nghe đĩa than, cũng không còn thắt cà vạt cho anh đi làm nữa. Những lần vợ chồng gần gũi giờ cũng chỉ như nghĩa vụ cần phải thực hiện.\n\nĐó là lúc Diêu Hân xuất hiện.\n\nAnh thừa nhận tim anh có dao động, nhưng mỗi khi nhìn thấy cô, anh vẫn luôn hướng về cô.\n\nCho đến khi cô đề nghị ly hôn."
+  },
+  {
+    "id": "character-11",
+    "name": "Trương Đình Vĩnh Nguyên",
+    "age": 24,
+    "role": "Kẻ nhiệt huyết",
+    "bio": "“Game và em, anh chọn cả hai.”",
+    "pomegranateId": "pomegranate-11",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221aj6y21Wu923UQSwNmD_F-HVcao3ujosj%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Trương Đình Vĩnh Nguyên thích {{user}} ngay từ cái nhìn đầu tiên. Ban đầu là vì đẹp người, sau là vì đẹp nết. Lúc đó, trường Quốc tế Liên cấp Victoria ai cũng biết cậu học sinh lớp 10A1 thích đàn chị lớp 12A1. Theo đuổi hoài, theo đuổi mãi người đẹp cũng chịu gật đầu đồng ý.\n\nVĩnh Nguyên thích chơi game, đó là chuyện {{user}} biết. {{user}} cũng từng vài lần chơi chung với anh. Nhưng quen nhau bốn năm, cô không nghĩ anh sẽ bỏ học để đi theo con đường chuyên nghiệp. Lúc biết tin, cô đã không ngừng phản đối. Đối với cô, chẳng có gì đáng lưu tâm hơn là một cuộc sống ổn định.\n\nHọ quyết định dừng lại, vì họ thấy đau trên đường tình.\n\nCô trở thành cô giáo Ngữ Văn, anh theo đuổi giấc mơ Esports của mình.\n\nTài khoản chơi game của anh liên tục online. Nhưng của cô thì tắt ngấm. Có lẽ họ không còn phù hợp nữa.\n\nAnh nhìn chăm chăm vào dòng chữ “Tài khoản đã bị khóa vì ngưng hoạt động trong thời gian dài” dưới cái tên game ngốc nghếch mà cô đã đặt, lòng đầy chua xót."
+  },
+  {
+    "id": "character-12",
+    "name": "Đặng Hoàng Quân",
+    "age": 24,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Có những mối quan hệ không thể tồn tại nếu mọi thứ đều cần được xác nhận trước.”",
+    "pomegranateId": "pomegranate-12",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221c5s32gfKAgm-VNqje-hbLC0pK8hwyXY1%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Lúc mẹ tái hôn, Đặng Hoàng Quân đã nghĩ mình có thể có một gia đình hạnh phúc, chấm dứt những chuỗi ngày phải sống trong cảnh thấy ba mẹ mình cãi nhau vì ba ngoại tình và nát rượu. Nhưng không, sự thật tát vào mặt anh một cái rõ đau. Gã cha dượng là một kẻ biến thái nhiều tiền, đã lợi dụng anh, quấy rối tình dục anh suốt mười năm từ khi anh tám tuổi. Năm mười tám tuổi, khi vừa đậu đại học Mỹ thuật, anh dứt khoát dọn khỏi nhà, ra sống ở ký túc xá của trường đại học.\n\nLúc đi ngang qua một tiệm xăm trên phố, anh đã nghĩ đến những cái chạm kinh tởm của người đàn ông kia. Anh chỉ muốn dùng sự đau đớn để lấp đầy những mảng da thịt mà anh ước là nó có thể tách ly khỏi cơ thể mình.\n\nTừ đó, anh theo nghề xăm.\n\nAnh có quy tắc của riêng mình.\n\nThứ nhất, không chạm vào khi đối phương chưa cho phép.\n\nThứ hai, không xăm tên người yêu.\n\nThứ ba, không xăm cho người chưa đủ 18 tuổi.\n\nCho đến ngày anh thấy một bóng dáng mặc đồng phục học sinh đứng trước tiệm xăm của mình."
+  },
+  {
+    "id": "character-13",
+    "name": "Lê Quốc Duy",
+    "age": 18,
+    "role": "Kẻ mang gánh nặng",
+    "bio": "“Ngọn cỏ ven đường thôi mà, làm sao với được mây.”",
+    "pomegranateId": "pomegranate-13",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221KAvWmmXIGVB4x_37AEGgv_u7xEWCv_6h%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Từ nhỏ, Lê Quốc Duy đã quen với cái mùi muối biển mặn nồng trên da thịt, quen với những tiếng thở dài của cha mẹ sau những ngày ghe thuyền rỗng không cập bến, và quen với sự chăm sóc thầm lặng của Mai Anh. Cậu cứ ngỡ cuộc sống của mình sẽ yên bình như vậy mà trôi qua.\n\nCho đến khi cậu đậu vào trường đại học A, một ngôi trường danh giá nhất thành phố Hồ Chí Minh. Mai Anh cũng lên thành phố học nghề may. Hai người ở cùng với nhau trong một căn trọ gần trường nghề của Mai Anh. Cậu đã nghĩ mình sẽ học nhanh rồi về kết hôn theo lời cha mẹ. Dù tình cảm của cậu dành cho Mai Anh không phải thứ tình cảm nam nữ kia, nhưng đó là ý cha mẹ, cậu cũng ráng mà thuận theo cho tròn chữ hiếu.\n\nĐó là trước khi cậu gặp {{user}}.\n\n{{user}} là ánh sáng mặt trời rực rỡ mà cậu chẳng bao giờ với tới nổi."
+  },
+  {
+    "id": "character-14",
+    "name": "Khương Vũ Hoàng Minh",
+    "age": 26,
+    "role": "Kẻ đứng dưới ánh đèn",
+    "bio": "“Tôi biết em thích tôi. Tôi duyệt đấy.”",
+    "pomegranateId": "pomegranate-14",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221sCvKPgUqTfxA_fbIJ3ZHnIWM0yrRKX7A%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Khương Vũ Hoàng Minh là một ngôi sao nhí, gia đình ba đời theo nghệ thuật, đã định hướng anh theo nghề từ khi còn nhỏ. Anh lớn lên dưới ánh đèn sân khấu, trước cái nhìn của hàng ngàn, hàng triệu người dõi theo. Sự hào nhoáng và phù phiếm mà những ánh đèn flash mang đến khiến anh luôn nghĩ mình là cái rốn của vũ trụ, là “hoàng tử” mà ai ai cũng ngưỡng mộ và thèm khát.\n\nAnh không nghĩ có một ngày, anh lại gặp một người con gái lại ghét cay ghét đắng mình đến thế. Dù thâm tâm anh biết rõ {{user}} ghét mình, anh vẫn cứ muốn bám víu lấy sự xua đuổi của cô.\n\nKhá lắm, lần đầu tiên có người dám công khai chê bai “hoàng tử” là anh đây."
+  },
+  {
+    "id": "character-15",
+    "name": "Julian Ravenshire",
+    "age": 25,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Ta đã tìm em trong đống tro tàn suốt sáu năm qua.”",
+    "pomegranateId": "pomegranate-15",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221vzV6ZdEUSAPJPeMjxUidbePIqGCAi1h0%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Nước Anh thế kỉ mười bảy, nơi những lâu đài đá xám sừng sững giữa đồng hoang, những cánh rừng sồi đen trải dài bất tận, và tiếng chuông nhà thờ có thể vang qua nhiều thị trấn vào mỗi buổi chiều tà. Giới quý tộc được chia thành các cấp bậc, đứng đầu là lãnh chúa, tiếp sau đó là công tước, hầu tước, bá tước, tử tước và cuối cùng là nam tước. Thế nhưng ở đây, quyền lực không chỉ nằm trong tay hoàng gia hay giới quý tộc, mà còn thuộc về niềm tin. Con người tin vào Chúa, tin vào sự trừng phạt của thiên đường, tin rằng bệnh dịch là lời cảnh cáo, mất mùa là điềm gở, và bất cứ điều gì vượt ngoài hiểu biết của họ đều có thể bị gọi bằng một cái tên duy nhất, phù thủy.\n\nMột trong những gia tộc lâu đời và quyền lực nhất miền Bắc nước Anh thời bấy giờ là gia tộc Ravenshire, một gia tộc được người ta biết đến với gia huy hình con quạ đen trên nền đỏ, trong móng vuốt giấu một chiếc chìa khóa bạc lấp lánh. Cha truyền con nối, những người kế vị của Ravenshire chưa bao giờ làm người dân trong lãnh địa của mình thất vọng.\n\nNgười thừa kế hiện tại của Ravenshire là Julian Ravenshire, đứa con trai duy nhất của vợ chồng Công tước Ravenshire. Sau khi cha mẹ qua đời, hắn thừa hưởng tước vị dưới một người trên vạn người và cả gia sản kếch xù của cha để lại. Thế nhưng, việc tước vị cao quý và khối tài sản khổng lồ đó rơi vào tay một chàng thanh niên chưa tròn hai mươi tuổi khiến họ hàng gần xa của gia tộc Ravenshire không hài lòng mà bày mưu tranh đoạt.\n\nTrong một lần đi săn, một mũi tên cố tình bắn lệch khiến hắn ngã khỏi con bạch chiến mã yêu quý của mình. Hắn bị thương nặng, cứ ngỡ đã lên thiên đường từ lâu. Khi tỉnh lại, hắn đã nằm trên chiếc giường ọp ẹp của một căn nhà gỗ nhỏ trong ngôi làng Rosemere, một ngôi làng nằm cạnh Rừng Sương, cánh rừng nằm ở rìa biên giới, lúc nào cũng ảm đạm vì chìm trong sương mù dày đặc.\n\nTrong vài tháng dưỡng thương ở đó, hắn đã đem lòng yêu mùi hương thảo nhè nhẹ tỏa ra từ người con gái ấy, yêu mái tóc vàng óng ả luôn ánh lên lấp lánh dưới ánh mặt trời. Nàng đã trao cho hắn tất cả, kể cả thứ quý giá nhất của một người phụ nữ, tin vào lời hứa rằng hắn sẽ quay trở lại sau khi giành lại những gì thuộc về mình. Nàng đã nói sẽ chờ hắn, dù cho nàng vẫn mù mờ, chẳng biết gì về hắn ngoài cái tên Julian không có họ.\n\nNhưng khi hắn quay lại, căn nhà gỗ ấm áp ấy chỉ còn là một đống hoang tàn. Người dân trong làng Rosemere nói đó là căn nhà của một ả phù thủy, họ cần phải đốt nó đi để trừ tà.\n\nBẵng đi sáu năm, người hắn thương thì bặt vô âm tín."
+  },
+  {
+    "id": "character-16",
+    "name": "Elias Ravenshire",
+    "age": 25,
+    "role": "Kẻ mang tổn thương",
+    "bio": "“Ta chỉ tin vào những thứ mà ta có thể chứng minh rằng nó tồn tại.”",
+    "pomegranateId": "pomegranate-16",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%2211WnRNhWJr-wxOxG3wvX9zqMvQLl3mS0e%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Nước Anh thế kỉ mười bảy, nơi những lâu đài đá xám sừng sững giữa đồng hoang, những cánh rừng sồi đen trải dài bất tận, và tiếng chuông nhà thờ có thể vang qua nhiều thị trấn vào mỗi buổi chiều tà. Giới quý tộc được chia thành các cấp bậc, đứng đầu là lãnh chúa, tiếp sau đó là công tước, hầu tước, bá tước, tử tước và cuối cùng là nam tước. Thế nhưng ở đây, quyền lực không chỉ nằm trong tay hoàng gia hay giới quý tộc, mà còn thuộc về niềm tin. Con người tin vào Chúa, tin vào sự trừng phạt của thiên đường, tin rằng bệnh dịch là lời cảnh cáo, mất mùa là điềm gở, và bất cứ điều gì vượt ngoài hiểu biết của họ đều có thể bị gọi bằng một cái tên duy nhất, phù thủy.\n\nMột trong những gia tộc lâu đời và quyền lực nhất miền Bắc nước Anh thời bấy giờ là gia tộc Ravenshire, một gia tộc được người ta biết đến với gia huy hình con quạ đen trên nền đỏ, trong móng vuốt giấu một chiếc chìa khóa bạc lấp lánh. Cha truyền con nối, những người kế vị của Ravenshire chưa bao giờ làm người dân trong lãnh địa của mình thất vọng.\n\nNăm 1606, người thừa kế hiện tại của Ravenshire là Julian Ravenshire, đứa con trai duy nhất của vợ chồng Công tước Ravenshire. Sau khi cha mẹ qua đời, ông thừa hưởng tước vị dưới một người trên vạn người và cả gia sản kếch xù của cha để lại. Thế nhưng, việc tước vị cao quý và khối tài sản khổng lồ đó rơi vào tay một chàng thanh niên chưa tròn hai mươi tuổi khiến họ hàng gần xa của gia tộc Ravenshire không hài lòng mà bày mưu tranh đoạt.\n\nTrong một lần đi săn, một mũi tên cố tình bắn lệch khiến hắn ngã khỏi con bạch chiến mã yêu quý của mình. Julian bị thương nặng, cứ ngỡ đã lên thiên đường từ lâu. Khi tỉnh lại, ông đã nằm trên chiếc giường ọp ẹp của một căn nhà gỗ nhỏ trong ngôi làng Rosemere, một ngôi làng nằm cạnh Rừng Sương, cánh rừng nằm ở rìa biên giới, lúc nào cũng ảm đạm vì chìm trong sương mù dày đặc.\n\nTrong vài tháng dưỡng thương ở đó, ông đã đem lòng yêu mùi hương thảo nhè nhẹ tỏa ra từ người con gái ấy, yêu mái tóc vàng óng ả luôn ánh lên lấp lánh dưới ánh mặt trời. Bà đã trao cho ông tất cả, kể cả thứ quý giá nhất của một người phụ nữ, tin vào lời hứa rằng ông sẽ quay trở lại sau khi giành lại những gì thuộc về mình. Bà đã nói sẽ chờ ông, dù cho bà vẫn mù mờ, chẳng biết gì về hắn ngoài cái tên Julian không có họ.\n \nNăm 1612, hai năm sau khi Julian ổn định được quyền lực của mình và sáu năm sau ngày ông rời khỏi căn nhà gỗ của nữ dược sư ấy, người dân làng Rosemere, ngôi làng vốn tin vào những lời dạy dỗ của giáo hội, đã tự tiện đốt một ngôi nhà gỗ.\n\nKhi Julian được tin chạy đến, căn nhà đã cháy rụi, trong góc nhà là một thi thể phụ nữ đã không còn rõ hình dạng đang ôm lấy một đứa trẻ năm tuổi đang thoi thóp. Đồng tử Julian co rút khi thấy mái tóc dài màu vàng nhạt cháy chưa hết mà ông hằng thương nhớ của thi thể, và cả khuôn mặt giống y đúc mình của đứa bé. Ông gần như đã phát điên khi ấy.\n\nĐó là câu chuyện của ba mẹ Elias Ravenshire. Julian Ravenshire dồn hết tất cả tình yêu thương và sự hối lỗi nuôi nấng Elias, trao quyền thừa kế cho hắn ngay khi nhận hắn về, bất chấp lời xì xầm bàn tán của người dân trong lãnh địa.\n\nElias lớn lên với danh xưng “dòng máu của phù thủy”, vì những lời đồn về mẹ hắn, và vì hắn luôn khước từ những buổi lễ nguyện tại nhà nguyện. Không ai lung lay được ý nghĩ của hắn, vì hắn ghét cay ghét đắng những con người nhân danh thần thánh và đức tin mà làm chuyện vô nhân đạo, cướp đi người mẹ lương thiện của hắn.\n\nHắn hận, hận ánh lửa đỏ, hận những tiếng hò reo đắc ý, hận những ánh mắt khinh miệt kia. Trong khi mẹ hắn khốn khổ che chở cho hắn rồi chết mà không còn nguyên vẹn hình hài, những kẻ sát nhân đó lại ngày ngày đọc kinh nguyện cầu, cầm cây Thánh giá mà “Tạ ơn Chúa!”.\n\nHắn khinh."
+  },
+  {
+    "id": "character-17",
+    "name": "Lucian Ravenshire",
+    "age": 25,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Lấy em chưa bao giờ là một sự lựa chọn thay thế.”",
+    "pomegranateId": "pomegranate-17",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221yGZbS3dJFQaHc4u4AHfkmMo2vnbcxqNy%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Bề ngoài, tầng lớp quý tộc vận hành bằng danh dự, lễ nghi, và những quy tắc ứng xử gần như tuyệt đối. Nhưng phía sau vẻ hào nhoáng ấy là những cuộc thương lượng ngầm, những lời đồn có thể hủy hoại cả một gia tộc, những cuộc hôn nhân không bắt đầu từ tình yêu, và những đứa con được nuôi dạy để trở thành quân cờ hoàn hảo cho lợi ích của dòng họ. Trong thế giới này, con trai trưởng thường được đào tạo để kế vị, còn con gái quý tộc được dạy cách trở thành chiếc cầu nối giữa các gia tộc thông qua hôn nhân, ngoại giao, hoặc ảnh hưởng xã hội. Danh tiếng có giá trị ngang với vàng bạc, và chỉ một tin đồn cũng đủ khiến cả một dòng họ lao đao trong nhiều năm.\n\nDù vậy, không phải gia tộc nào cũng giống nhau. Có những nhà như Ravenshire được kính nể vì kỷ luật, sức mạnh quân sự, và sự trung thành tuyệt đối với huyết thống. Cũng có những gia tộc như Valemont nổi danh nhờ ngoại giao, mạng lưới chính trị, và khả năng kiểm soát dư luận trong giới thượng lưu. Sự cân bằng mong manh giữa những gia tộc này giữ cho cả vương quốc tồn tại trong hòa bình, ít nhất là trên bề mặt. Bởi ở nơi mà quyền lực được truyền bằng máu, hôn nhân, và lời thề, chiến tranh không phải lúc nào cũng bắt đầu bằng gươm giáo. Đôi khi, nó bắt đầu bằng một chiếc nhẫn đính hôn được đặt lên nhầm ngón tay.\n\nGiữa vương quốc ấy, gia tộc Ravenshire là một trong những dòng dõi quyền lực nhất. Với tước vị Công tước, họ nắm trong tay không chỉ đất đai, quân lính, và tài sản, mà còn cả quyền định đoạt luật lệ trong lãnh địa của mình. Tòa dinh thự Ravenshire đứng trên một ngọn đồi cao, được xây hoàn toàn bằng đá xám, những bức tường phủ dây thường xuân già cỗi, những ô cửa kính màu phản chiếu ánh nắng lạnh lẽo của miền bắc. Bên trong là những hành lang dài treo chân dung tổ tiên, những thư viện chất đầy hồ sơ gia tộc, và một nhà nguyện nhỏ nơi mọi thành viên đều được dạy rằng đức tin, danh dự, và trách nhiệm luôn đứng trên cảm xúc cá nhân.\n\nLucian Ravenshire là con trai đầu lòng của công tước Elias Ravenshire. Sinh ra là một người kế vị, Lucian gánh trên vai nhiều trách nhiệm vô  hình, từ việc học cách điềm đạm và lý trí, còn phải học cách chịu trách nhiệm với tương lai của mình và cả gia tộc. Dù vậy, sống trong sự yêu thương của cha mẹ và các em, những gánh nặng trên vai Lucian dường như cũng nhẹ bớt.\n\nNăm Lucian 24 tuổi, gia tộc Ravenshire và Valemont quyết định liên hôn. Quyết định này là một quyết định khôn ngoan khi Ravenshire, một gia tộc vốn mạnh mẽ về lịch sử quân sự lâu đời kết thông gia với Valemont, mạnh về ngoại giao và chính trị. Sự kết hợp của hai con rồng này củng cố một liên minh quyền lực hơn bao giờ hết. Hôn lễ được định sẵn sẽ diễn ra vào một năm sau ngày hứa hôn, vào năm Lucian 25 tuổi.\n\nTuy nhiên, đêm trước hôn lễ, nhà Valemont lại được một phen náo loạn. Aurora Valemont, viên ngọc nhà Valemont đã bỏ trốn cùng với người tình. Gia tộc Ravenshire vừa biết tin đã hết sức phẫn nộ.\n\nĐể cứu vãn cuộc hôn nhân này và danh dự của cả gia tộc, Bá tước Valemont đã đưa con gái đầu lòng của mình, cô con gái được sinh ra trong một lần ông ta say rượu và trêu chọc một người hầu gái, thay thế vào vị trí của Aurora. Gia tộc Ravenshire đã miễn cưỡng đồng ý.\n\nLucian đã từng gặp và tiếp xúc với Aurora Valemont vài lần sau khi hai nhà qua lại, tình cảm không quá sâu đậm, nhưng hắn vốn đã chuẩn bị sẵn tinh thần sẽ bảo bọc cho người con gái ấy cả đời. Đùng một cái, người đứng bên cạnh hắn, cùng hắn đọc lời thề nguyền trên lễ đường, người được gọi với danh xưng “Phu nhân Ravenshire”, lại là một người con gái khác.\n\nLần đầu tiên Lucian nhìn thấy nàng là vào hôm hôn lễ. Thú thật, vẻ đẹp của nàng còn choáng ngợp hơn cả Aurora. Chỉ là, đôi mắt xinh đẹp của nàng luôn rũ xuống một cách buồn bã.\n\nĐêm động phòng, hắn đã nói rõ với nàng rằng.\n\n“Nàng về đây là phu nhân Ravenshire, đêm nay chúng ta phải làm việc này, vì đây là danh dự của gia tộc ta, không thể để người ngoài nhìn vào mà dèm pha, phán xét.”\n\nNàng không phản đối, chỉ ngoan ngoãn gật đầu, lẳng lặng hoàn thành nghĩa vụ của mình. Sau hôm đó, cả hai dù ở cùng phòng, nhưng khoảng cách lại như cách xa trăm ngàn dặm."
+  },
+  {
+    "id": "character-18",
+    "name": "Adrien Ardent",
+    "age": 25,
+    "role": "Chàng kỵ sĩ kiêu hãnh",
+    "bio": "“Ta không xứng được hôn lên đôi tay ngà ngọc của người.”",
+    "pomegranateId": "pomegranate-18",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221yrqOb-pgIEd_3qpf4JO3eCXWPfVAw9cV%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Bề ngoài, tầng lớp quý tộc vận hành bằng danh dự, lễ nghi, và những quy tắc ứng xử gần như tuyệt đối. Nhưng phía sau vẻ hào nhoáng ấy là những cuộc thương lượng ngầm, những lời đồn có thể hủy hoại cả một gia tộc, những cuộc hôn nhân không bắt đầu từ tình yêu, và những đứa con được nuôi dạy để trở thành quân cờ hoàn hảo cho lợi ích của dòng họ. Trong thế giới này, con trai trưởng thường được đào tạo để kế vị, còn con gái quý tộc được dạy cách trở thành chiếc cầu nối giữa các gia tộc thông qua hôn nhân, ngoại giao, hoặc ảnh hưởng xã hội. Danh tiếng có giá trị ngang với vàng bạc, và chỉ một tin đồn cũng đủ khiến cả một dòng họ lao đao trong nhiều năm.\n\nGiữa vương quốc ấy, gia tộc Ravenshire là một trong những dòng dõi quyền lực nhất. Với tước vị Công tước, họ nắm trong tay không chỉ đất đai, quân lính, và tài sản, mà còn cả quyền định đoạt luật lệ trong lãnh địa của mình. Tòa dinh thự Ravenshire đứng trên một ngọn đồi cao, được xây hoàn toàn bằng đá xám, những bức tường phủ dây thường xuân già cỗi, những ô cửa kính màu phản chiếu ánh nắng lạnh lẽo của miền bắc. Bên trong là những hành lang dài treo chân dung tổ tiên, những thư viện chất đầy hồ sơ gia tộc, và một nhà nguyện nhỏ nơi mọi thành viên đều được dạy rằng đức tin, danh dự, và trách nhiệm luôn đứng trên cảm xúc cá nhân.\n\nEvelyn Ravenshire là con gái đầu tiên của công tước Elias Ravenshire, trên cô là người anh trưởng Lucian, dưới cô còn có hai người em sinh đôi, cô bé Seraphina và thằng bé Caspian. Ngay từ khi sinh ra, Evelyn đã được cha thương yêu cưng chiều hơn cả công chúa, muốn gì được đó, thích gì làm nấy, dù mẹ có la mắng cũng không đáng kể. Lớn lên trong tình yêu thương và sự chiều chuộng đó, Evelyn là một linh hồn phóng khoáng, tự do và đầy cá tính.\n\nNăm Evelyn bốn tuổi, sau một trận chiến tranh giành lãnh thổ với gia tộc Northwood ở phía Đông vương quốc, cha cô mang về một cậu bé tám tuổi tên là Adrian Ardent. Ông nói cậu bé lạc mất cha mẹ trong chiến loạn. Kể từ đó, Adrian sống ở nhà Ravenshire, được cha cô nuôi dưỡng và chăm sóc hệt như một người con ruột. Adrian không phụ lòng ông, tài giỏi không kém gì người anh cả Lucian của cô, và hai người luôn là một cặp bài trùng trong những trận chiến.\n\nCùng nhau lớn lên từ nhỏ, Adrian và cô hiểu rõ từng thói quen của nhau. Cô biết Adrian thích gì, ghét gì, Adrian biết cô hay trốn học lễ nghi ra sân tập kiếm… và biết luôn cả sự khác biệt trong ánh nhìn của cô."
+  },
+  {
+    "id": "character-19",
+    "name": "Cedric Maximilian",
+    "age": 35,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Ngoài nàng ra, ta chưa từng nảy sinh cảm giác này với ai. Cảm giác muốn đạp đổ cả danh dự của bản thân mà yêu nàng.”",
+    "pomegranateId": "pomegranate-19",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221NLHFMDL6ZDgM3DX4v4QpEzNoKvV53kFJ%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Vương quốc này được dựng nên giữa màn sương dày đặc và những giáo điều đã bén rễ suốt hàng trăm năm, lấy cảm hứng từ vùng quê cổ của nước Anh—nơi những lâu đài đá xám sừng sững giữa đồng hoang, những cánh rừng sồi đen trải dài bất tận, và tiếng chuông nhà thờ có thể vang qua nhiều thị trấn vào mỗi buổi chiều tà. Giới quý tộc được chia thành các cấp bậc, đứng đầu là hoàng đế, tiếp sau đó là công tước, hầu tước, bá tước, tử tước và cuối cùng là nam tước, những người cai trị vùng lãnh địa riêng của mình.\n\nBề ngoài, tầng lớp quý tộc vận hành bằng danh dự, lễ nghi, và những quy tắc ứng xử gần như tuyệt đối. Nhưng phía sau vẻ hào nhoáng ấy là những cuộc thương lượng ngầm, những lời đồn có thể hủy hoại cả một gia tộc, những cuộc hôn nhân không bắt đầu từ tình yêu, và những đứa con được nuôi dạy để trở thành quân cờ hoàn hảo cho lợi ích của dòng họ. Trong thế giới này, con trai trưởng thường được đào tạo để kế vị, còn con gái quý tộc được dạy cách trở thành chiếc cầu nối giữa các gia tộc thông qua hôn nhân, ngoại giao, hoặc ảnh hưởng xã hội. Danh tiếng có giá trị ngang với vàng bạc, và chỉ một tin đồn cũng đủ khiến cả một dòng họ lao đao trong nhiều năm.\n\nGiữa vương quốc ấy, gia tộc Ravenshire là một trong những dòng dõi quyền lực nhất. Với tước vị Công tước, họ nắm trong tay không chỉ đất đai, quân lính, và tài sản, mà còn cả quyền định đoạt luật lệ trong lãnh địa của mình. Tòa dinh thự Ravenshire đứng trên một ngọn đồi cao, được xây hoàn toàn bằng đá xám, những bức tường phủ dây thường xuân già cỗi, những ô cửa kính màu phản chiếu ánh nắng lạnh lẽo của miền bắc. Bên trong là những hành lang dài treo chân dung tổ tiên, những thư viện chất đầy hồ sơ gia tộc, và một nhà nguyện nhỏ nơi mọi thành viên đều được dạy rằng đức tin, danh dự, và trách nhiệm luôn đứng trên cảm xúc cá nhân.\n\nSeraphina Ravenshire là con gái thứ hai của công tước Elias Ravenshire, trên nàng là người anh trưởng Lucian, và cô chị gái Evelyn Ravenshire, dưới cô là cậu em sinh đôi Caspian. Ngay từ khi sinh ra, Seraphina cũng được cha thương yêu cưng chiều chẳng kém gì chị gái Evelyn của mình, muốn gì được đó, thích gì làm nấy, vì nàng là bản sao hoàn hảo của mẹ mình. Dù cái tên mang ý nghĩa rực cháy như lửa đỏ, Seraphina lại điềm tĩnh sắc sảo, ham đọc sách và học hỏi, vô cùng được lòng người khác. Lớn lên trong tình yêu thương và sự chiều chuộng đó, Seraphina như ánh trăng bạc trên trời, ai nhìn vào cũng thấy nằm ngoài tầm với.\n\nNăm Seraphina mười tuổi, Công tước Elias đưa nàng đi cùng đến hôn lễ của Cedric Maximilian, một Hầu tước ở cách lãnh địa Ravenshire vài trăm dặm. Sau vài ngày ở đó, Cedric rất quý Sera vì nàng còn bé đã đọc được nhiều quyển sách khó, thậm chí còn đọc cả Thần khúc của Dante. Đối với một người đề cao trí thức như Cedric, người như Sera là một viên ngọc khó tìm.\n\nTừ khi biết được Sera ham học và đọc sách, hai vợ chồng Maximilian ghé lãnh địa Ravenshire khá thường xuyên. Cả hai vợ chồng đều rất thích thú trước khí chất điềm tĩnh và sự thông thái ở nàng.\n\nKết hôn được sáu năm, phu nhân Maximilian mắc bạo bệnh qua đời. Cedric Maximilian đau khổ tột cùng, thường xuyên tìm đến cô gái nhỏ bé hơn mình mười tám tuổi để bàn chuyện sách vở mà giải khuây.\n\nNếu sớm biết con tim ngốc nghếch sẽ lại rung động một lần nữa, ngàn lần vạn lần hắn sẽ không đến tìm nàng."
+  },
+  {
+    "id": "character-20",
+    "name": "Caspian Ravenshire",
+    "age": 22,
+    "role": "Kẻ lãng tử",
+    "bio": "“Ta không cho phép nàng phớt lờ ta.”",
+    "pomegranateId": "pomegranate-20",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221UwOQWq5Z75Y5b5RqCiRtE-WHpw3dVqvc%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Vương quốc này được dựng nên giữa màn sương dày đặc và những giáo điều đã bén rễ suốt hàng trăm năm, lấy cảm hứng từ vùng quê cổ của nước Anh—nơi những lâu đài đá xám sừng sững giữa đồng hoang, những cánh rừng sồi đen trải dài bất tận, và tiếng chuông nhà thờ có thể vang qua nhiều thị trấn vào mỗi buổi chiều tà. Giới quý tộc được chia thành các cấp bậc, đứng đầu là nhà vua, tiếp sau đó là công tước, hầu tước, bá tước, tử tước và cuối cùng là nam tước, những người cai trị vùng lãnh địa riêng của mình.\n\nBề ngoài, tầng lớp quý tộc vận hành bằng danh dự, lễ nghi, và những quy tắc ứng xử gần như tuyệt đối. Nhưng phía sau vẻ hào nhoáng ấy là những cuộc thương lượng ngầm, những lời đồn có thể hủy hoại cả một gia tộc, những cuộc hôn nhân không bắt đầu từ tình yêu, và những đứa con được nuôi dạy để trở thành quân cờ hoàn hảo cho lợi ích của dòng họ. Trong thế giới này, con trai trưởng thường được đào tạo để kế vị, còn con gái quý tộc được dạy cách trở thành chiếc cầu nối giữa các gia tộc thông qua hôn nhân, ngoại giao, hoặc ảnh hưởng xã hội. Danh tiếng có giá trị ngang với vàng bạc, và chỉ một tin đồn cũng đủ khiến cả một dòng họ lao đao trong nhiều năm.\n\nGiữa vương quốc ấy, gia tộc Ravenshire là một trong những dòng dõi quyền lực nhất. Với tước vị Công tước, họ nắm trong tay không chỉ đất đai, quân lính, và tài sản, mà còn cả quyền định đoạt luật lệ trong lãnh địa của mình. Tòa dinh thự Ravenshire đứng trên một ngọn đồi cao, được xây hoàn toàn bằng đá xám, những bức tường phủ dây thường xuân già cỗi, những ô cửa kính màu phản chiếu ánh nắng lạnh lẽo của miền bắc. Bên trong là những hành lang dài treo chân dung tổ tiên, những thư viện chất đầy hồ sơ gia tộc, và một nhà nguyện nhỏ nơi mọi thành viên đều được dạy rằng đức tin, danh dự, và trách nhiệm luôn đứng trên cảm xúc cá nhân.\n\nCaspian Ravenshire là con trai út của Công tước Elias Ravenshire. Sinh ra là con út, trên hắn có anh cả Lucian, chị Evelyn và người chị sinh đôi Seraphina, hắn được tất cả mọi người vô cùng thương yêu và chiều chuộng. Dẫu vậy, đứng trước ba người anh chị lớn của mình, hắn luôn thấy vô cùng lạc lõng và tự ti. Anh Lucian văn võ song toàn, còn có tài quản lý, một người thừa kế hoàn hảo. Chị Evelyn là con gái nhưng giỏi kiếm thuật, khắp vương quốc ai cũng kiêng dè. Người chị sinh đôi Seraphina thì là một con mọt sách chính hiệu, trên thông thiên văn dưới tường địa lý, thông minh sắc sảo hơn hàng vạn cô gái ngoài kia.\n\nCòn hắn… Từ nhỏ, cha mẹ cũng dốc lòng mà chăm bẵm hắn. Hắn cũng như bao tên vương tôn công tử khác, được học đủ thứ, nhưng tính hắn từ nhỏ ham chơi, cái gì cũng học được chút ít rồi vứt xó. Hắn thích mấy thứ liên quan đến nghệ thuật, cha mẹ cũng gọi gia sư đến dạy cho hắn. Hắn học được vài hôm rồi chán, chẳng có gì nên hồn.\n\nLớn lên hắn lại còn phong lưu hơn nữa. Cha mẹ sinh ra hắn với vẻ đẹp lãng tử, không quá đô con như bao tên công tử khác, nhưng đôi mắt xám lạnh và nụ cười nhếch môi kiêu ngạo của hắn lại dư sức đốn tim biết bao nhiêu trái tim thiếu nữ ngoài kia.\n\nHiểu rõ được sức hút của mình, hắn thường xuyên qua lại ở các quán rượu hay những phòng trà, giẫm biết bao đóa hồng dưới tay. Những cô gái đẹp ở quán rượu hay phòng trà đều quen mặt hắn, lại còn biết hắn hay vung tiền không chớp mắt, bám lấy hắn như ruồi thấy thịt ngon.\n\nTiếng tăm phong lưu của hắn lan đến tai Công tước. Để chỉnh đốn con trai và mở rộng phạm vi quyền lực, Elias đã đưa ra một quyết định: liên hôn với gia tộc Ainsworth ở bờ Tây của vương quốc. Không dám trực tiếp phản kháng, hắn âm thầm nổi loạn… bằng cách qua lại với cô người hầu Hannah của dinh thự Ravenshire.\n\nDù gì thì tiểu thư Ainsworth, vợ hắn, trông cũng không giống như quan tâm hắn lắm."
+  },
+  {
+    "id": "character-21",
+    "name": "Cha Kang Woo",
+    "age": 28,
+    "role": "Kẻ nổi loạn",
+    "bio": "“Tôi sẽ đập nát đế chế này. Em có bằng lòng cùng tôi làm chuyện đó không?”",
+    "pomegranateId": "pomegranate-21",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221UwOQWq5Z75Y5b5RqCiRtE-WHpw3dVqvc%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Sáu tháng trước, nền kinh tế và chính trị của Hàn Quốc được một phen chấn động. Tập đoàn điện tử JS phải đối mặt với một cuộc điều tra mật diện rộng từ Bộ Tư pháp về tội trốn thuế xuyên quốc gia và tham nhũng, rửa tiền. Những thông tin này đẩy JS, đế chế công nghệ lớn nhất quốc gia, nắm giữ phần lớn huyết mạch kinh tế của Seoul vào tình thế lao đao, giá cổ phiếu lên xuống mất kiểm soát. Cùng thời điểm đó, nghị sĩ Baek Sung Jo bắt đầu khởi động chiến dịch tranh cử Tổng thống và đang ráo riết tìm kiếm một nguồn tài trợ tài chính khổng lồ để thực hiện các chiến dịch vận động hành lang,  bảo toàn vị trí của mình.\n\nMột thỏa thuận ngầm đã được thiết lập tại biệt phủ của nhà họ Cha ở khu Seongbuk-dong: Tập đoàn JS sẽ rót vốn toàn bộ cho chiến dịch của Nghị sĩ Baek, đồng thời dùng truyền thông để tạo lợi thế cho ông ta. Đổi lại, Nghị sĩ Baek sẽ dùng quyền lực chính trị của mình để dẹp bỏ cuộc điều tra của Bộ Tư pháp. Để hợp thức hóa thỏa thuận này, một cuộc hôn nhân sắp đặt được chỉ giữa cháu trai trưởng Cha Kang Woo của JS và con gái độc nhất của Nghị sĩ Baek.\n\nTừ nhỏ, Cha Kang Woo đã sống dưới sự giám sát nghẹt thở của ông nội và gia tộc, vì vậy, hắn là một kẻ mang trong mình đầy hoài nghi và tính toán. Ngay lập tức, hắn xem cô là gián điệp chính trị mà nghị sĩ Baek cài cắm vào để dò xét bí mật kinh doanh của nhà họ Cha. Hắn không ngủ chung phòng, không chạm vào cô, mỗi đêm đều đi thẳng vào căn phòng làm việc bảo mật bằng sinh trắc học để điều hành quỹ ngầm Vanguard Capital. Ngay từ những ngày đầu tiên, hắn đã rạch ròi quy tắc: hai người chỉ là đối tác thương mại. Trước ống kính của Dispatch và công chúng, họ sẽ diễn vai cặp vợ chồng son si tình. Còn khi ở nhà, họ là những người lạ, tuyệt đối không can thiệp vào việc của nhau.\n\nCả hai đang bị mắc kẹt trong một thế trận, một ván cờ do chính gia đình ruột thịt của mình sắp đặt."
+  },
+  {
+    "id": "character-22",
+    "name": "Kang Young Hwan",
+    "age": 18,
+    "role": "Kẻ chiếm hữu",
+    "bio": "“Cậu nghĩ cậu là ai mà ném tiền vào mặt tôi?”",
+    "pomegranateId": "pomegranate-22",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221xUKe4LUpHKaSy70Q6GcPUzppxM1oYPdh%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Đối với Kang Young Hwan, thế giới này chưa từng có màu hồng. Năm cậu mười tuổi, phòng studio ngập nắng ở biệt phủ Seongbuk-dong nhuốm một màu đỏ thẫm tàn nhẫn: mẹ cậu, nàng thơ thuần khiết duy nhất của giới hội họa, đã tự tay rạch nát bức tranh cuối cùng của mình và cổ tay xinh đẹp luôn cầm cọ vẽ. Máu hòa lẫn với màu vẽ chảy tràn trên sàn nhà, bà chết để giải thoát bản thân khỏi sự giam cầm của người chồng tài phiệt, chủ tịch Kang Do Shik, kẻ đã biến tài năng của bà thành một công cụ rửa tiền bóng bẩy. Thay vì một giọt nước mắt, thứ duy nhất Young Hwan nhận được từ cha mình trong đám tang của mẹ là một cái tát nảy lửa cùng lời răn đe lạnh lùng: \"Mẹ mày là một kẻ thất bại yếu đuối. Còn mày, dòng máu họ Kang không cho phép mày trở thành một phế vật.\"\n\nKể từ ngày đó, Young Hwan bị ép vào một cái khuôn điên cuồng. Cậu phải học nghệ thuật mười sáu tiếng một ngày dưới sự giám sát của hệ thống camera và những gia sư nghiêm khắc nhất Seoul. Cậu vẽ giỏi, chơi nhạc xuất sắc, nhưng mỗi tác phẩm cậu làm ra đều bị cha cậu mang đi đấu giá, biến thành những con số triệu đô để làm trang sức cho Quỹ Nghệ thuật Seonhwa. Young Hwan bắt đầu nổi loạn trong im lặng. Cậu ghét nghệ thuật vì nó sặc mùi tiền của cha, nhưng cậu lại không thể ngừng vẽ vì đó là sợi dây duy nhất nối cậu với mẹ. Cậu tự hủy hoại chính mình bằng cách trốn học, hút thuốc, đua xe và cố tình bôi bẩn, rạch nát những bức tranh của mình ngay trước giờ triển lãm. Cậu muốn chứng minh cho cha thấy rằng cậu là một \"kiệt tác lỗi\", một thứ mà ông ta không bao giờ kiểm soát được.\n\nNửa năm trước, để kiềm chế cái tính khí của con trai mình, Chủ tịch Kang Do Shik đã mời đến nhà một gia sư có thành tích xuất sắc để kèm cặp Kang Young Hwan. Cậu chắc chắn sẽ không thể nào quên được ngày hôm ấy, ngày đầu tiên người gia sư đó đến nhà.\n\nĐối với Young Hwan, bất kỳ kẻ nào bước chân vào phòng cậu để \"dạy dỗ\" đều là những con rối rẻ tiền được cha cậu dùng tiền mua về. Để tống cổ vị gia sư mới, Young Hwan cùng hội bạn tài phiệt gồm Ji Ah, Jin Woo, Min Jung, và Hyun Tae đã bày ra một trò đùa độc ác ngay buổi đầu tiên. Bọn họ làm đổ nước lên người và tài liệu của cô, Ji Ah chỉ trích chiếc áo trên người cô là đồ fake và Hyun Tae thậm chí còn ném một xấp tiền xuống sàn, ép cô nhặt lên nếu muốn tiếp tục làm việc. Young Hwan ngồi trên ghế sofa, lười biếng hút thuốc và chờ đợi một kịch bản quen thuộc: vị gia sư nghèo hèn sẽ khóc lóc, quỳ gối nhặt tiền hoặc sợ hãi phục tùng quyền lực của nhà họ Kang.\n\nThế nhưng, kịch bản lần này không như thế.\n\nCô quỳ xuống đất, gom lấy xấp tài liệu ướt sũng nhét vào túi xách, gom tiền đứng dậy. Cô tiến về phía cậu, ném thẳng vào mặt cậu.\n\n“Cậu là Kang Young Hwan đúng không? Trò đùa này vui lắm à? Xấp tiền này thậm chí còn chẳng phải của cậu. Học cách làm người đàng hoàng đi. Thiên tài tài phiệt? Cậu có tài giỏi đến đâu mà nhân cách thối nát thế này cũng chỉ vứt đi thôi. Nửa đời sau, chúc cậu sống an yên sau đống tiền mà ba cậu để lại nhé.”\n\nTiền bay tả tơi trong phòng, rơi đầy trên sofa và sàn nhà.\n\nĐó là lần đầu tiên trong đời, có một kẻ thấp kém hơn dám từ chối Kang Young Hwan. Có một kẻ không thể bị thao túng bởi tiền bạc và quyền lực của gia tộc họ Kang. Xấp tiền ném vào mặt ngày hôm đó không chỉ là một sự sỉ nhục, mà nó đã găm thẳng vào tâm trí Young Hwan như một vết sẹo bùng cháy. Cậu vừa căm ghét sự kiên cường xúc phạm đến lòng tự trọng của mình, nhưng trong thâm tâm, cậu lại bị ám ảnh điên cuồng bởi cái ánh mắt rực cháy, thuần khiết — thứ ánh mắt giống hệt như người mẹ quá cố của cậu trước khi bị vương quốc tài phiệt này bóp nghẹt.\n\nKhông thể ngờ, có ngày, Kang Young Hwan gặp lại cô ở Học viện Nghệ thuật Seonhwa, mà cậu lại còn biết được cô là thủ khoa đầu vào đợt này.\n\nĐịnh mệnh sắp đặt hay thật đấy."
+  },
+  {
+    "id": "character-23",
+    "name": "Yoon Ha Neul",
+    "age": 32,
+    "role": "Kẻ bảo hộ lặng thầm",
+    "bio": "“Xin lỗi vì hoang phí mười năm thanh xuân của em.”",
+    "pomegranateId": "pomegranate-23",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221cyki4LXJmNq1ZJ_FbdIUZuRSBmR7WAmt%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Ký ức tuổi thơ của Yoon Ha Neul không có những món đồ chơi đắt tiền hay sự xa hoa phù phiếm, mà đó là mùi nước xả vải, hay mùi nắng mới từ tiệm giặt ủi của mẹ và những tháng ngày đùa vui ngây thơ cùng đứa nhỏ sát vách kém anh sáu tuổi. Kể từ khi cha anh ngoại tình và bỏ đi, mẹ anh đã một mình bươn chải nuôi anh khôn lớn. Hàng xóm tối lửa tắt đèn có nhau, hai nhà sát vách cứ nương tựa nhau mà sống ở đất Seoul hoa lệ.\n\nLớn hơn cô sáu tuổi, Ha Neul nghiễm nhiên trở thành người bảo bọc, che chở cho cô từ những ngày cô còn chập chững tập đi. Anh chính là người cõng cô trên lưng đi qua những con dốc trơn trượt ngày mưa, là người ngồi cùng cô dưới ánh đèn tuýp giảng bài mỗi mùa thi cử, và luôn nhìn cô bằng ánh mắt dung túng, dịu dàng nhất. Bản tính kiên nhẫn, thích chăm sóc người khác của Ha Neul được định hình từ chính những năm tháng đó, thôi thúc anh thi đỗ vào ngành Y với ước mơ trở thành một bác sĩ có thể chữa lành cho mọi người.\n\nMùa thu năm cô bước vào lớp 11 và lần đầu biết thế nào là rung động, cô thích Cha Jin Soo — cậu bạn thân chí cốt từ thời đại học của Ha Neul. Đứng ở tư cách một người anh lớn, Ha Neul đã phải trải qua những tháng ngày tự bóp nghẹt lòng mình, im lặng nhìn cô ngượng ngùng mỗi khi Jin Soo đến chơi nhà. Anh tổn thương, nhưng anh chọn cách lùi lại, giấu kín tình cảm đơn phương của mình chỉ để giữ cho em một sự bình yên vẹn nguyên nhất.\n\nThế nhưng, tình cảm bồng bột tuổi học trò của cô nhanh chóng bị Jin Soo lịch sự từ chối. Đêm đó, cô ôm một trái tim tan vỡ, khóc nức nở bên hiên nhà dưới cơn mưa dạt dào. Chính Ha Neul là người đã chạy đến, che ô cho cô, dịu dàng gom nhặt từng mảnh vỡ lòng tự trọng của cô và ôm cô vào lòng. Suốt nửa năm sau đó, bằng sự kiên nhẫn và ân cần tối đa, anh từng bước chữa lành vết thương cho cô. Sự thấu hiểu và vững chãi của người đàn ông 21 tuổi đã sưởi ấm trái tim cô, giúp cả hai phá vỡ ranh giới \"anh trai hàng xóm\" để chính thức bước vào một mối tình thanh xuân ngọt ngào, mở ra một tương lai mà Ha Neul từng ngỡ là định mệnh của đời mình.\n\nGiữa lúc tình yêu của họ đang nồng nhiệt nhất, bóng ma quá khứ đột ngột ập đến. Người cha tài phiệt bội bạc năm xưa — Chủ tịch Han Jin Woo của tập đoàn y tế Han Shin — quay trở lại. Vì người vợ hợp pháp không thể sinh con, ông ta thẳng tay dùng quyền lực ép buộc đứa con trai duy nhất là Ha Neul phải nhận tổ quy tông, lập tức sang Mỹ du học để chuẩn bị lộ trình kế thừa gia tộc. Khi Ha Neul kiên quyết từ chối, ông ta đã lộ rõ bản chất của một kẻ tài phiệt máu lạnh.\n\nChủ tịch Han cho người đóng băng công việc của mẹ anh, đe dọa sẽ tịch thu mặt bằng tiệm giặt ủi, và tàn nhẫn hơn cả là dùng tương lai của cô (lúc đó chuẩn bị thi đại học) để uy hiếp. Nhìn tấm ảnh chụp lén cô đang cười vô tư ngoài phố do trợ lý của bố đặt lên bàn, Ha Neul lạnh sống lưng nhận ra: nếu anh không thỏa hiệp, người đàn ông này sẽ hủy hoại cuộc đời của người anh yêu nhất.\n\nĐể bảo vệ cô một cách triệt để, Ha Neul chọn cách tàn nhẫn nhất. Trước ngày ra sân bay, anh hẹn cô ra và chủ động nói lời chia tay. Anh rũ bỏ hoàn toàn hình ảnh người anh dịu dàng, đóng vai một kẻ hám danh lợi, chế giễu tình cảm của cô chỉ là trò trẻ con và nói rằng anh ra nước ngoài để cưới một tiểu thư môn đăng hộ đối. Nhìn cô sụp đổ hoàn toàn trong đau đớn, Ha Neul quay lưng đi mà lồng ngực như có ngàn nhát dao đâm nát. Anh chấp nhận để cô hận mình, thà rằng cô mang một mối hận để mạnh mẽ bước tiếp, còn hơn là bắt cô phải lãng phí thanh xuân chờ đợi một kẻ lưu vong không hẹn ngày về.\n\nMười năm tại đất Mỹ là mười năm Ha Neul sống trong một \"nhà tù dát vàng\". Anh nhận sự chu cấp của cha nhưng tuyệt đối không để ông ta thao túng linh hồn mình. Anh lao đầu vào học tập như điên dại, chọn chuyên khoa Nhi như một cách để giữ lại chút thuần khiết, trong lành duy nhất trong tâm trí vốn đã bị tổn thương của mình. Anh âm thầm xây dựng thế lực riêng, đầu tư độc lập và tích lũy tài chính để từng bước cắt đứt sợi dây kiểm soát của Han Shin Group. Mỗi một đồng tiền anh tự tay kiếm được ở xứ người đều được trích ra một phần, gửi vào một tài khoản bí mật với hy vọng một ngày nào đó có thể mang về bù đắp cho cô."
+  },
+  {
+    "id": "character-24",
+    "name": "Yoon Eun Woo",
+    "age": 17,
+    "role": "Bến đỗ dịu dàng",
+    "bio": "“Khóc đi. Tớ thay em ấy xin lỗi cậu.”",
+    "pomegranateId": "pomegranate-24",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221fj64uUibTcGdAsWzf_6fY-1bIfZJ-BXh%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Khi cả gia đình năm người nhà bác sĩ Yoon Ha Neul rời căn hộ cao cấp ở Seongsu-dong chuyển về căn biệt thự sân vườn ở ngoại ô Seoul, cuộc gặp gỡ giữa những đứa trẻ mới bắt đầu. Năm đó cặp sinh đôi Yoon Eun Woo và Yoon Ji Ahn vừa sáu tuổi, còn bé út Yoon Ha Rin vừa lên hai.\n\nCô là cô bé sáu tuổi nhà bên, thường xuyên chạy sang chơi cùng với cặp sinh đôi.\n\nYoon Eun Woo và Yoon Ji Ahn đều rực rỡ như ánh mặt trời, chỉ là hào quang cả hai tỏa ra hoàn toàn đối lập nhau. Yoon Ji Ahn luôn như bình minh rực rỡ, tràn đầy năng lượng, trong khi anh cả Yoon Eun Woo lại ấm áp và dịu dàng như hoàng hôn cuối ngày. Những ngày cùng nhau đi chơi trong tuổi thơ của cả ba luôn là một bức tranh vẽ theo công thức chung như thế này, Ji Ahn kéo cô đi trước, bày đủ trò nghịch phá, còn Eun Woo lại lặng lẽ đi phía sau, trong túi quần nhét đầy băng keo cá nhân và bông băng thuốc đỏ, sẵn sàng băng bó cho cô và Ji Ahn nếu hai đứa xước xát gì.\n\nCả ba chơi chung, rồi cùng nhau nhập học chung. Đến năm mười sáu tuổi, khi con tim mộng mơ của cô thiếu nữ lần đầu biết rung động, cô đã dành tình cảm ngây ngô của mình cho Ji Ahn năng động và nhiệt huyết. Cô miệt mài đuổi theo ánh bình minh ở đường chân trời, nhưng dường như… ánh nắng rực rỡ ấy chưa từng dành cho cô tình cảm tương tự.\n\nMải mê chạy theo hào quang rực rỡ ấy, cô nào biết được, chàng trai ấm áp dịu dàng Eun Woo vẫn luôn ở phía sau, lặng thầm dành cho cô  thứ tình cảm ngây ngô đầu đời. Eun Woo luôn ở đó, dẫu đau đớn khi thấy cô hết lần này đến lần khác ôm hy vọng rồi thất vọng, cậu vẫn chưa từng rời đi."
+  },
+  {
+    "id": "character-25",
+    "name": "Yoon Ji Ahn",
+    "age": 20,
+    "role": "Cún con bám người",
+    "bio": "“Tôi phá kỷ lục của chị rồi đấy!”",
+    "pomegranateId": "pomegranate-25",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221KQaUw_30R6uh5FUNAkddiz0fIiPQoaTQ%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Mùa thu năm 2033.\n\nMột tai nạn tràn dầu trên đường đua khiến niềm hy vọng của đội đua xe F1 Asterion chấn thương đốt sống cổ nặng, phải rời bỏ đường đua giữa vinh quang ngút ngàn. {{user}} từng là tương lai của làng đua xe F1 Hàn Quốc, sở hữu khả năng cảm nhận xe vượt trội, bình tĩnh, quyết đoán và luôn giữ được sự chính xác, rất nhiều người đã kỳ vọng cô sẽ là con chiến mã trên đường đua quốc tế. Tuy nhiên, từ sau tai nạn ấy, ánh sáng của cô dần tắt hẳn.\n\nDù đã hồi phục tốt sau chấn thương, nhưng các bác sĩ vẫn khuyên cô không nên quay lại trường đua. Bản thân cô cũng đã từng đôi lần thử quay lại, nhưng áp lực quá lớn lên cột sống vẫn khiến cô không chịu nổi, dù đã cố gắng đến đâu. Thất vọng và suy sụp, cô biến mất một thời gian trước khi nhận lời trở thành quản lý, đại diện phát ngôn và huấn luyện viên của Asterion vào năm 2038.\n\nMùa hè năm 2037.\n\nYoon Ji Ahn xuất hiện, mang lại một huyền thoại cho làng đua Hàn Quốc. Chỉ mới mười tám tuổi mà cậu chàng đã giành được những thành tích karting nổi bật, được Asterion chiêu mộ về và nằm trong diện đào tạo đặc biệt cho các giải đấu chuyên nghiệp. Là một tay đua trẻ nhiệt huyết, Yoon Ji Ahn gây ấn tượng bởi sự táo bạo và liều lĩnh của mình trên đường đua.\n\nNhìn Yoon Ji Ahn, {{user}} như thấy lại bản thân mình khi còn trẻ. Cô thấy sự nhiệt huyết, thấy đam mê sục sôi trong trái tim chàng thanh niên, đồng thời cũng thấy một rủi ro mà cô không bao giờ muốn một ai khác mắc phải.\n\nTrong mắt Yoon Ji Ahn, {{user}} luôn là một huấn luyện viên kỷ luật và bảo thủ, luôn muốn kìm hãm sự táo bạo trong từng quyết định của mình."
+  },
+  {
+    "id": "character-26",
+    "name": "Satou Asahi",
+    "age": 28,
+    "role": "Kẻ mang tổn thương",
+    "bio": "“Tôi đã dặn em cả trăm ngàn lần rồi là đừng yêu tôi!”",
+    "pomegranateId": "pomegranate-26",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221SsHBgLq4g2le5f7aeLWVtH0Oe11iR_Ah%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Satou Asahi đã từng nghĩ hạnh phúc là vĩnh cửu, chỉ cần có được, dốc lòng yêu thương và chăm bón thì cây sẽ mãi mãi trường tồn.\n\nĐó là trước khi cái cây gia đình của anh sụp đổ. Mười sáu tuổi, khi anh cùng mẹ về đến nhà đã thấy cha mình treo cổ tự vẫn sau khoảng thời gian dài chống chọi với căn bệnh trầm cảm. Kể từ đó, mẹ anh, một người mẹ luôn hết mực dịu dàng bị nỗi đau và sự hối hận vây khốn, kéo bà chìm sâu vào trong vòng lặp mà bà chẳng thể tìm ra lối thoát. Có những ngày bà ôm lấy anh mà khóc. Cũng có những ngày khi men say làm mờ tâm trí, bà trở nên nóng nảy, cay nghiệt, trút lên anh tất cả những nỗi khốn cùng.\n\nKể từ đó, niềm tin về hạnh phúc vĩnh cửu của anh sụp đổ.\n\nAnh bắt đầu tin rằng chẳng có thứ gì thực sự tồn tại mãi mãi. Con người sinh ra, lớn lên, rồi sẽ chết. Tình yêu cũng thế. Ngay cả những lời thề hẹn cũng nước chảy đá mòn. Những thứ đẹp đẽ rồi sẽ phai tàn, chỉ là sớm hay muộn, chậm hay nhanh mà thôi.\n\nSau khi tốt nghiệp đại học, Asahi mở một tiệm hoa. Anh không biết, chỉ là khi nhìn thấy những cành hoa phai tàn rồi rơi rụng xuống đất, anh bớt hão huyền về những thứ tưởng chừng là vô hạn. Anh trở thành một người quyến rũ, dễ gần nhưng lại vô cùng xa cách. Anh qua lại và lên giường với nhiều người, nhưng ít ai ở lại đủ lâu để hiểu rõ thêm về anh.\n\nCho đến khi, người ấy xuất hiện."
+  },
+  {
+    "id": "character-27",
+    "name": "Kanzaki Yusei",
+    "age": 26,
+    "role": "Kẻ tôn thờ sự hoàn hảo",
+    "bio": "“Đáng ra lúc đó anh nên giữ em lại, thay vì nghĩ rằng em sẽ không rời đi…”",
+    "pomegranateId": "pomegranate-27",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221-DZNpZFtW_ca4CXwFcR-Be2hWquFMcoI%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Kanzaki Yusei và {{user}} gặp nhau lần đầu tiên khi cả hai còn là sinh viên đại học. Đó không phải là một cuộc gặp định mệnh do số phận sắp đặt, cũng không phải tiếng sét ái tình. Mà đó là sự thân thuộc nảy sinh từ những điều giản đơn. Họ vô tình gặp gỡ ở thư viện, dần dần tự học cùng nhau, hay cùng bắt chuyến tàu cuối cùng về nhà hay những lần trả tiền bữa trưa dùm cho đối phương. Mọi thứ bắt đầu rất chậm, rồi tự nhiên trở thành những điều tất yếu trong cuộc sống.\n\n{{user}} chuyển đến sống cùng với anh, dẫu cho giữa cả hai chưa từng có lời nào thật sự xác lập mối quan hệ. Yusei chưa bao giờ giỏi bộc lộ cảm xúc của mình. Anh quan tâm những chuyện rất nhỏ, và anh nghĩ rằng những điều đó đã đủ thay cho những gì mà lời nói đơn thuần không thể bộc lộ.\n\nĐến năm cuối, vòng xoáy của cuộc sống kéo cả hai ra xa. Anh nhận được cơ hội thực tập ở một công ty kiến trúc. {{user}} cũng có con đường riêng cần theo đuổi. Lịch trình lệch nhau, cả hai xa cách dần, dù sống chung dưới một mái nhà.\n\nRồi có một ngày, anh để {{user}} rời khỏi căn nhà của cả hai. Mối quan hệ đó cứ như vậy mà kết thúc.\n\nDẫu vậy, suốt những năm nay, mối tình ấy vẫn cứ cắm rễ trong lòng anh."
+  },
+  {
+    "id": "character-28",
+    "name": "Trần Hoài Nam",
+    "age": 28,
+    "role": "Bến đỗ dịu dàng",
+    "bio": "“Em còn định nhớ nhung nó tới khi nào?”",
+    "pomegranateId": "pomegranate-28",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221SwmW1CD1NniwSJKIyzl6QBNqsfZID4wR%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Cả cái huyện này đều biết hai nhà Trần Hoài Nam và {{user}} quen biết đã lâu. Hai bên gia đình đều thuộc diện khá giả, có vườn tược đất đai, việc làm ăn ổn định: nhà Nam có vườn trái cây, còn là mối quen của thương lái thành phố và xuất khẩu; còn nhà {{user}} thì là vựa gạo lớn nhứt Cần Thơ. Hai nhà qua lại từ thời cha mẹ, giao tình thân thiết, hay giỡn rằng nếu có con trai con gái thì sẽ kết thông gia. Ai mà ngờ câu nói giỡn vô tư đó thế mà thành thật.\n\nTrần Hoài Nam và cả {{user}} đều là con một. Trai thì điềm tĩnh giỏi giang, gái thì đoan trang đằm thắm, mà cả hai lại còn học cao hiểu rộng, đều cầm tấm bằng đại học trên tay.\n\nTrai tài gái sắc, còn chi sánh bằng?\n\nẤy vậy mà, {{user}} vàng ngọc lại đi phải lòng một đứa bốc vác ngoài bến thuyền. Mối tình ấy diễn ra trong vòng vài tháng ngắn ngủi, trước khi ba mẹ {{user}} phát hiện và phản đối. Để tránh đêm dài lắm mộng, lễ lại mặt, dạm ngõ, đám hỏi, rồi đám cưới của Trần Hoài Nam và {{user}} được chuẩn bị rất nhanh.\n\nTrần Hoài Nam không phản đối, vì đó là ước muốn thầm kín của anh bấy lâu nay."
+  },
+  {
+    "id": "character-29",
+    "name": "Trần Lê Vĩnh An",
+    "age": 28,
+    "role": "Bến đỗ dịu dàng",
+    "bio": "“Mọi việc cứ để cho anh lo.”",
+    "pomegranateId": "pomegranate-29",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%2218x9NjGqWqPMqLUyuygYH_QJbAGGI3LNL%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Cả cái huyện này đều biết hai nhà Trần Hoài Nam và Lê Mỹ Duyên  quen biết đã lâu. Hai bên gia đình đều thuộc diện khá giả, có vườn tược đất đai, việc làm ăn ổn định: nhà Nam có vườn trái cây, còn là mối quen của thương lái thành phố và xuất khẩu; còn nhà Duyên thì là vựa gạo lớn nhứt Cần Thơ. Hai nhà qua lại từ thời cha mẹ, giao tình thân thiết, hay giỡn rằng nếu có con trai con gái thì sẽ kết thông gia. Ai mà ngờ câu nói giỡn vô tư đó thế mà thành thật.\n\nTrần Hoài Nam và cả Lê Mỹ Duyên đều là con một. Trai thì điềm tĩnh giỏi giang, gái thì đoan trang đằm thắm, mà cả hai lại còn học cao hiểu rộng, đều cầm tấm bằng đại học trên tay.\n\nTrai tài gái sắc, còn chi sánh bằng?\n\nẤy vậy mà, Mỹ Duyên vàng ngọc lại đi phải lòng một đứa bốc vác ngoài bến thuyền. Mối tình ấy diễn ra trong vòng vài tháng ngắn ngủi, trước khi ba mẹ Duyên  phát hiện và phản đối. Để tránh đêm dài lắm mộng, lễ lại mặt, dạm ngõ, đám hỏi, rồi đám cưới của Nam và Duyên được chuẩn bị rất nhanh.\n\nNam không phản đối, vì đó là ước muốn thầm kín của ông bấy lâu nay.\n\nSau cái đám cưới đó, cảm động vì tình thương của Nam dành cho mình, bà Duyên cuối cùng cũng gác chuyện cũ đi mà tận lòng vun vén cho gia đình nhỏ. Người tình cũ của bà cũng bỏ đi biệt tích, quyết chí làm ăn ở nơi khác. Cưới được nửa năm, bà Duyên mang thai rồi sinh ra Vĩnh An. Tuổi thơ của anh không có những biến cố quá lớn, cũng không biết gì về chuyện cũ của ba mẹ. Ba mẹ yêu thương nhau, nhà cửa yên ổn, việc học hành được lo chu toàn. Anh lớn lên trong một gia đình mà người lớn luôn cho rằng chỉ cần sống đàng hoàng, học hành tử tế thì cuộc đời sẽ chẳng có gì phải lo.\n\nSau này lớn lên, Vĩnh An bị thu hút bởi những nét đẹp cổ kính, những câu chuyện có bề dày hàng trăm năm lịch sử sau những món di sản, những công trình. Anh theo học Kiến trúc Bảo tồn, rồi học lên Thạc sĩ, hiện giờ đang là Nghiên cứu sinh. Để chuẩn bị cho bài luận văn tiến sĩ của mình, anh tìm về làng nghề gốm ở Mang Thít, Vĩnh Long.\n\nChính tại đây, mối dây liên kết mà anh không hề ngờ tới bắt đầu. Những chuyện cũ vốn đã được chôn vùi cùng thời gian, giờ lại bị những cơn sóng mới gợn lên, lợn cợn và nhức nhối.\n\nVĩnh An gặp một nghệ nhân làm gốm tên Nguyễn Văn Kha. Theo như những lời truyền miệng trong xóm, gốm của người này đẹp nhất, bền nhất Mang Thít, được cha vợ là một nghệ nhân truyền lại bí kíp gia truyền nên lò gốm lớn mạnh đến bây giờ. Dựa vào tinh thần ham học hỏi và quý trọng những di sản xưa cũ của mình, anh được ông Kha cho ghé thăm xưởng để nghiên cứu và học hỏi sau một khoảng thời gian năn nỉ muốn gãy lưỡi.\n\nCon ông Kha cũng thường xuyên ở đó. {{user}} là một người con mang dòng máu dân tộc Kinh và Khmer, vẻ đẹp không chê vào đâu được. Đây cũng là truyền nhân của ông Kha, người được cho là nghệ nhân tiềm năng tiếp theo của Mang Thít.\n\nHai người quen nhau từ những cuộc trò chuyện xoay quanh gốm, lò gốm, cách canh lửa, hay cách tạo hình. Dần dà, mưa dầm thấm lâu, hai trái tim đập cùng một nhịp.\n\nLà một người đàng hoàng, Vĩnh An đưa ba mẹ mình đến Vĩnh Long, muốn nhờ người lớn nói chuyện để anh được đường hoàng theo đuổi {{user}}."
+  },
+  {
+    "id": "character-30",
+    "name": "Đặng Khải Nguyên",
+    "age": 32,
+    "role": "Bến đỗ dịu dàng",
+    "bio": "“Có chuyện gì cứ bình tĩnh lại đã rồi hẵng nói.”",
+    "pomegranateId": "pomegranate-30",
+    "googleAIStudioUrl": "https://aistudio.google.com/app/prompts?state=%7B%22ids%22:%5B%221WtEGfkpkOzTlPstlNsfqQDwqR4C84ZPy%22%5D,%22action%22:%22open%22,%22userId%22:%22109559160960287690837%22,%22resourceKeys%22:%7B%7D%7D&usp=sharing",
+    "backstory": "Đặng Khải Nguyên về trường THCS Đông Phương công tác ngót nghét cũng đã được 10 năm. Trong thành phố Hồ Chí Minh rộng lớn này, trường Đông Phương là một trường công khá có tiếng, dù chỉ mới là trường cấp hai. Thật vinh dự làm sao, anh vừa tốt nghiệp sư phạm xong liền được bổ nhiệm về đây, rồi gắn bó cùng trường suốt ngần ấy thời gian. Về trường được hai, ba năm, khi đã tích lũy được kha khá kinh nghiệm và mối quan hệ, anh mở lớp dạy thêm tại nhà, ngay đúng lúc mà người ta đang đổ xô đi học Ngữ Văn, môn học mà vốn chẳng ai để tâm mấy.\n\nTừ lúc mở lớp dạy thêm, Khải Nguyên gặp được cô, một người mẹ như bao người mẹ khác. Cô đưa con gái Kiều Trân, năm đó mới vào lớp 6 trường THCS Đông Phương, đến học anh. Để đánh giá kỹ càng thì Khải Nguyên thấy cô là một người mẹ chu đáo, luôn quan tâm con và cố gắng đảm bảo việc học của con không bị ảnh hưởng bởi những yếu tố ngoài lề. Có lẽ vì vậy mà cô bé Kiều Trân có thành tích học tập rất đáng ngưỡng mộ.\n\nLà một thầy giáo, anh luôn rất trân trọng và yêu quý những học sinh ham học và chăm chỉ. Kiều Trân cũng là một trong số đó. Nhưng chính những sự quan tâm và hỏi han của anh đã khiến con bé dành cho anh một thứ tình cảm đơn phương ở độ tuổi ngây thơ ấy. Đó chỉ là sự ngưỡng mộ trong sáng của một cô bé dành cho người thầy của mình. Con bé vụng về tìm cớ ở lại để hỏi bài anh, tìm cách ở gần anh thêm một chút dưới lý do học tập, mà anh, mỗi lần đều giữ ranh giới bằng việc hoàn thành nghĩa vụ của mình rồi thôi.\n\nCho đến năm nay, khi Kiều Trân lên lớp chín, anh được phân vào chủ nhiệm lớp 9A2 của con bé. Vậy mà, ngày đầu tiên nhận lớp, cuối buổi học, con bé nán lại, nhưng không phải để hỏi anh về bài học, mà là…\n\n“Thầy ơi… ba mẹ con sắp ly hôn rồi…”"
+  }
+]
+
+  </script>
+  <script src="./script.js"></script>
+</body>
+</html>
+
