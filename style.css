@@ -297,59 +297,7 @@ body.dark-mode .ivy-overlay {
   width: 100%;
 }
 
-/* --- Atmospheric Minimal Music Toggle --- */
-.music-toggle {
-  background: none;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: 20px;
-  padding: 0.35rem 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  color: var(--color-text-faint);
-  cursor: pointer;
-  transition: all var(--transition-medium);
-  outline: none;
-  user-select: none;
-}
 
-.music-toggle .music-icon {
-  font-size: 0.92rem;
-  line-height: 1;
-  color: var(--color-text-faint);
-  transition: color var(--transition-fast);
-}
-
-.music-toggle:hover {
-  border-color: var(--color-dusty-rose);
-  color: var(--color-text-muted);
-}
-
-.music-toggle:hover .music-icon {
-  color: var(--color-burgundy);
-}
-
-/* Music ON State */
-.music-toggle.playing {
-  border-color: var(--color-border-gold);
-  color: var(--color-burgundy);
-  background: rgba(184, 155, 104, 0.08);
-  box-shadow: 0 0 14px var(--color-gold-glow);
-}
-
-.music-toggle.playing .music-icon {
-  color: var(--color-pomegranate);
-  text-shadow: 0 0 8px var(--color-pomegranate-glow);
-}
-
-.music-toggle:focus-visible {
-  outline: 2px dashed var(--color-antique-gold);
-  outline-offset: 3px;
-}
 
 /* --- Mystical Underworld Candle (Light / Dark Theme Toggle) --- */
 .candle-toggle {
@@ -508,22 +456,6 @@ body.dark-mode .nav-link::after {
   background-color: var(--color-antique-gold);
 }
 
-body.dark-mode .music-toggle {
-  border-color: var(--color-border-subtle);
-  color: var(--color-text-faint);
-}
-
-body.dark-mode .music-toggle:hover {
-  border-color: var(--color-dusty-rose);
-  color: var(--color-text-muted);
-}
-
-body.dark-mode .music-toggle.playing {
-  border-color: var(--color-border-gold);
-  color: var(--color-antique-gold);
-  background: rgba(216, 189, 138, 0.1);
-  box-shadow: 0 0 16px var(--color-gold-glow);
-}
 
 body.dark-mode .garden-title {
   color: #EAC4CB;
@@ -583,16 +515,39 @@ body.dark-mode .profile-ornament-line {
   background: linear-gradient(90deg, transparent 0%, rgba(216, 189, 138, 0.5) 50%, transparent 100%);
 }
 
-body.dark-mode .taste-cta {
-  background: linear-gradient(135deg, rgba(214, 69, 91, 0.2) 0%, rgba(216, 189, 138, 0.2) 100%);
-  border-color: rgba(216, 189, 138, 0.35);
-  color: var(--color-text-main);
+body.dark-mode .taste-cta,
+body.dark-mode .taste-cta:hover,
+body.dark-mode .taste-cta:focus,
+body.dark-mode .taste-cta:focus-visible,
+body.dark-mode .taste-cta:active {
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
 }
 
-body.dark-mode .taste-cta:hover {
-  border-color: var(--color-antique-gold);
-  background: linear-gradient(135deg, rgba(214, 69, 91, 0.3) 0%, rgba(216, 189, 138, 0.3) 100%);
-  box-shadow: 0 0 25px rgba(216, 189, 138, 0.28);
+body.dark-mode .taste-cta .taste-cta-text {
+  color: #F4ECE3;
+}
+
+body.dark-mode .taste-cta:hover .taste-cta-text,
+body.dark-mode .taste-cta:focus-visible .taste-cta-text {
+  color: var(--color-pomegranate-bright);
+  text-shadow: 0 0 14px var(--color-pomegranate-glow);
+}
+
+body.dark-mode .taste-cta .taste-cta-line {
+  background: var(--color-antique-gold);
+  opacity: 0.75;
+}
+
+body.dark-mode .taste-cta:hover .taste-cta-line,
+body.dark-mode .taste-cta:focus-visible .taste-cta-line {
+  transform: scaleX(1);
+  opacity: 1;
+  background: var(--color-pomegranate-bright);
 }
 
 body.dark-mode .bo-luu-btn {
@@ -1409,7 +1364,29 @@ body.dark-mode .archive-empty-state {
   cursor: pointer;
   position: relative;
   padding: 0.4rem 0;
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.taste-cta:hover,
+.taste-cta:focus,
+.taste-cta:active {
+  background: none;
+  background-color: transparent;
+  border: none;
+  border-color: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+.taste-cta::before,
+.taste-cta::after {
+  content: none;
 }
 
 .taste-cta-text {
@@ -1419,7 +1396,7 @@ body.dark-mode .archive-empty-state {
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--color-burgundy);
-  transition: color var(--transition-medium), transform var(--transition-medium);
+  transition: color var(--transition-medium), transform var(--transition-medium), text-shadow var(--transition-medium);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -1448,10 +1425,23 @@ body.dark-mode .archive-empty-state {
   background: var(--color-pomegranate-bright);
 }
 
+/* Accessible subtle focus without any colored rectangular box */
 .taste-cta:focus-visible {
-  outline: 2px dashed var(--color-antique-gold);
-  outline-offset: 6px;
-  border-radius: 2px;
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.taste-cta:focus-visible .taste-cta-text {
+  color: var(--color-pomegranate);
+  transform: translateY(-2px);
+  text-shadow: 0 0 10px var(--color-pomegranate-glow);
+}
+
+.taste-cta:focus-visible .taste-cta-line {
+  transform: scaleX(1);
+  opacity: 1;
+  background: var(--color-pomegranate-bright);
 }
 
 /* Return to the garden */
@@ -2658,13 +2648,7 @@ body.dark-mode .archive-empty-state {
     gap: 0.85rem;
   }
 
-  .music-toggle {
-    padding: 0.3rem 0.65rem;
-  }
 
-  .music-toggle .music-label {
-    display: none; /* Keep minimal ♫ note on phones */
-  }
 
   .candle-toggle {
     padding: 0.3rem 0.65rem;

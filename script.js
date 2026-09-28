@@ -22,6 +22,8 @@
   let isAnimating = false;
   let activeView = 'garden'; // 'garden' | 'profile' | 'archive'
   let previousView = 'garden';
+  let archiveScrollPosition = 0;
+  let lastActiveArchiveCard = null;
 
   // --- Supabase Configuration for "Thắp hoa đăng cho linh hồn" ---
   // To connect your database, create a project at https://supabase.com, run the SQL script in `supabase-schema.sql`,
@@ -48,31 +50,6 @@
     return supabaseClient;
   }
 
-  // --- Background Atmospheric Audio Management ---
-  const AUDIO_SOURCES = [
-    'assets/music.mp3',
-    './assets/music.mp3'
-  ];
-  let currentAudioSourceIndex = 0;
-  
-  // Prefer the preloaded DOM <audio> element from index.html with fallback to new Audio()
-  const domAudio = document.getElementById('bg-music');
-  const bgMusic = domAudio || new Audio(AUDIO_SOURCES[currentAudioSourceIndex]);
-  bgMusic.loop = true;
-  bgMusic.volume = 0.25;
-  let isMusicPlaying = false;
-
-  bgMusic.addEventListener('error', (e) => {
-    console.warn(`[Audio] Notice on loading source ${AUDIO_SOURCES[currentAudioSourceIndex]}:`, e);
-    if (currentAudioSourceIndex < AUDIO_SOURCES.length - 1) {
-      currentAudioSourceIndex++;
-      bgMusic.src = AUDIO_SOURCES[currentAudioSourceIndex];
-      if (isMusicPlaying) {
-        bgMusic.play().catch((err) => console.warn('[Audio] Playback prevented:', err));
-      }
-    }
-  });
-
   // DOM Elements
   const gardenView = document.getElementById('garden-view');
   const profileView = document.getElementById('profile-view');
@@ -82,7 +59,6 @@
   const navGarden = document.getElementById('nav-garden');
   const navArchive = document.getElementById('nav-archive');
   const brandLink = document.getElementById('brand-link');
-  const musicToggle = document.getElementById('music-toggle');
   const candleToggle = document.getElementById('candle-toggle');
 
   const profileEyebrow = document.getElementById('profile-eyebrow');
@@ -126,55 +102,7 @@
   const archiveGrid = document.getElementById('archive-grid');
   const archiveEmpty = document.getElementById('archive-empty');
 
-  // --- 1. Background Music Toggle ---
-  function setupMusicControl() {
-    if (!musicToggle) return;
 
-    musicToggle.addEventListener('click', () => {
-      toggleMusic();
-    });
-
-    musicToggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleMusic();
-      }
-    });
-  }
-
-  function toggleMusic() {
-    if (!musicToggle) return;
-
-    if (isMusicPlaying) {
-      bgMusic.pause();
-      isMusicPlaying = false;
-      musicToggle.classList.remove('playing');
-      musicToggle.setAttribute('aria-label', 'Bật nhã nhạc');
-      musicToggle.setAttribute('title', 'Bật nhã nhạc');
-    } else {
-      const playPromise = bgMusic.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          isMusicPlaying = true;
-          musicToggle.classList.add('playing');
-          musicToggle.setAttribute('aria-label', 'Tắt nhã nhạc');
-          musicToggle.setAttribute('title', 'Tắt nhã nhạc');
-        }).catch((err) => {
-          console.warn('[Audio] Primary playback failed, trying alternative audio source:', err);
-          if (currentAudioSourceIndex < AUDIO_SOURCES.length - 1) {
-            currentAudioSourceIndex++;
-            bgMusic.src = AUDIO_SOURCES[currentAudioSourceIndex];
-            bgMusic.play().then(() => {
-              isMusicPlaying = true;
-              musicToggle.classList.add('playing');
-              musicToggle.setAttribute('aria-label', 'Tắt nhã nhạc');
-              musicToggle.setAttribute('title', 'Tắt nhã nhạc');
-            }).catch((e) => console.warn('[Audio] Fallback path also failed:', e));
-          }
-        });
-      }
-    }
-  }
 
   // --- 1.5. Underworld Candle (Light / Dark Mode Theme Control) ---
   function applyTheme(theme, save = true) {
@@ -427,6 +355,18 @@
     // Switch view
     previousView = activeView === 'profile' ? previousView : activeView;
     activeView = 'profile';
+
+    if (returnBtn) {
+      const returnLabel = returnBtn.querySelector('span');
+      if (returnLabel) {
+        returnLabel.textContent = previousView === 'archive' ? 'Trở về Sổ Linh hồn' : 'Trở về Vườn Lựu';
+      }
+      returnBtn.setAttribute('aria-label', previousView === 'archive' ? 'Trở về Sổ Linh hồn' : 'Trở về Vườn Lựu');
+    }
+
+    if (profileClose) {
+      profileClose.setAttribute('aria-label', previousView === 'archive' ? 'Đóng hồ sơ và trở về Sổ Linh hồn' : 'Đóng hồ sơ và trở về Vườn Lựu');
+    }
 
     profileView.classList.add('active');
     document.body.style.overflow = 'hidden';
@@ -1077,7 +1017,53 @@
     }
   }
 
-  // --- 6. Return to Garden & View Navigation ---
+  // --- 6. Return from Profile & View Navigation ---
+  function returnFromProfile() {
+    if (lanternModal && lanternModal.classList.contains('active')) {
+      lanternModal.classList.remove('active');
+      lanternModal.hidden = true;
+    }
+
+    if (backstoryModal && backstoryModal.classList.contains('active')) {
+      backstoryModal.classList.remove('active');
+      backstoryModal.hidden = true;
+    }
+
+    profileView.classList.remove('active');
+    document.body.style.overflow = '';
+
+    // Reset falling animation state on fruits so fruit remains visible on branch with tasted badge
+    const fallingFruits = document.querySelectorAll('.fruit-falling');
+    fallingFruits.forEach((f) => {
+      f.classList.remove('fruit-falling');
+    });
+
+    // Un-dim tree
+    if (treeStage) {
+      treeStage.classList.remove('soft-dim');
+    }
+
+    if (previousView === 'archive') {
+      const targetScroll = archiveScrollPosition;
+      switchView('archive');
+      window.location.hash = 'archive';
+      window.scrollTo(0, targetScroll);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, targetScroll);
+      });
+      if (lastActiveArchiveCard && typeof lastActiveArchiveCard.focus === 'function') {
+        try {
+          lastActiveArchiveCard.focus({ preventScroll: true });
+        } catch (_) {
+          lastActiveArchiveCard.focus();
+        }
+      }
+    } else {
+      switchView('garden');
+      window.location.hash = 'garden';
+    }
+  }
+
   function returnToGarden() {
     if (lanternModal && lanternModal.classList.contains('active')) {
       lanternModal.classList.remove('active');
@@ -1247,6 +1233,8 @@
       // Open character profile when card is clicked or triggered by Enter/Space
       const selectCard = (e) => {
         if (e && e.target && e.target.closest('.archive-lantern-btn')) return;
+        lastActiveArchiveCard = card;
+        archiveScrollPosition = window.pageYOffset || document.documentElement.scrollTop || 0;
         showCharacterProfile(char, false);
       };
 
@@ -1297,18 +1285,23 @@
 
   navArchive.addEventListener('click', (e) => {
     e.preventDefault();
-    switchView('archive');
-    window.location.hash = 'archive';
+    if (activeView === 'profile') {
+      previousView = 'archive';
+      returnFromProfile();
+    } else {
+      switchView('archive');
+      window.location.hash = 'archive';
+    }
   });
 
   returnBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    returnToGarden();
+    returnFromProfile();
   });
 
   profileClose.addEventListener('click', (e) => {
     e.preventDefault();
-    returnToGarden();
+    returnFromProfile();
   });
 
   // Bổ lựu Modal Triggers
@@ -1372,7 +1365,7 @@
     });
   }
 
-  // ESC key: Closes lantern modal or backstory modal if open; otherwise returns to garden from profile
+  // ESC key: Closes lantern modal or backstory modal if open; otherwise returns to previous view from profile
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       if (lanternModal && lanternModal.classList.contains('active')) {
@@ -1388,7 +1381,7 @@
         return;
       }
       if (activeView === 'profile') {
-        returnToGarden();
+        returnFromProfile();
       }
     }
   });
@@ -1487,7 +1480,6 @@
   // --- Initialize when DOM is ready ---
   function initializeApp() {
     setupThemeControl();
-    setupMusicControl();
 
     // Step 1: Pre-load from embedded fallback synchronously so fruit clicks work instantly
     const fallbackEl = document.getElementById('characters-fallback-data');
